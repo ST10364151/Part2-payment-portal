@@ -1,0 +1,36 @@
+{
+    "name": "payments-portal-frontend",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+      "react": "^18.2.0",
+      "react-dom": "^18.2.0",
+      "react-scripts": "5.0.1",
+      "lucide-react": "^0.263.1",
+      "web-vitals": "^3.5.0"
+    },
+    "scripts": {
+      "start": "HTTPS=true SSL_CRT_FILE=./ssl/cert.pem SSL_KEY_FILE=./ssl/key.pem PORT=3000 react-scripts start",
+      "build": "react-scripts build",
+      "test": "react-scripts test",
+      "eject": "react-scripts eject"
+    },
+    "eslintConfig": {
+      "extends": [
+        "react-app"
+      ]
+    },
+    "browserslist": {
+      "production": [
+        ">0.2%",
+        "not dead",
+        "not op_mini all"
+      ],
+      "development": [
+        "last 1 chrome version",
+        "last 1 firefox version",
+        "last 1 safari version"
+      ]
+    },
+    "proxy": "https://localhost:3001"
+  }
