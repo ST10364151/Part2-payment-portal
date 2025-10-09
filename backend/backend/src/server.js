@@ -27,6 +27,17 @@ import { requestLogger } from './middleware/logger.js';
 // Load environment variables
 dotenv.config();
 
+// ============================================================================
+// DEBUG: Check environment variables on startup
+// ============================================================================
+console.log('\n🔐 ENVIRONMENT VARIABLE CHECK');
+console.log('════════════════════════════════════════');
+console.log('PASSWORD_PEPPER loaded:', !!process.env.PASSWORD_PEPPER);
+console.log('PASSWORD_PEPPER (first 40):', process.env.PASSWORD_PEPPER?.substring(0, 20));
+console.log('JWT_SECRET loaded:', !!process.env.JWT_SECRET);
+console.log('MONGODB_URI loaded:', !!process.env.MONGODB_URI);
+console.log('════════════════════════════════════════\n');
+
 const app = express();
 
 // ============================================================================
@@ -53,14 +64,14 @@ app.use(helmet({
   referrerPolicy: { policy: 'same-origin' }
 }));
 
+// CORS - Configure allowed origins
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production'
-    ? ['https://yourdomain.com']
-    : ['https://localhost:3000', 'http://localhost:3000'],
+  origin: ['https://localhost:3000', 'http://localhost:3000'], // Allow both
   credentials: true,
   optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Add OPTIONS
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Type', 'Authorization']
 };
 app.use(cors(corsOptions));
 

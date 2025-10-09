@@ -1,46 +1,61 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { Employee } from '../models/Employee.js';
-import { hashPassword } from '../utils/passwordUtils.js';
 
-// Load .env variables
 dotenv.config();
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log('MongoDB connected'))
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1);
-});
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('✓ MongoDB connected'))
+  .catch(err => {
+    console.error('✗ MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 const createEmployee = async () => {
   try {
-    console.log('Hashing password...');
-    const password = await hashPassword('SecureEmpPass123!');
-    console.log('Password hashed:', password);
+    const testPassword = 'SecureEmpPass123!';
+    
+    // Check if employee already exists
+    const existingEmployee = await Employee.findOne({ username: 'student_student' });
+    
+    if (existingEmployee) {
+      console.log('⚠️  Employee already exists. Deleting old record...');
+      await Employee.deleteOne({ username: 'student_student' });
+    }
 
     console.log('Creating employee...');
+    
     const employee = await Employee.create({
-        fullName: 'John Smith',
-        username: 'john_smith',
-        employeeId: 'EMP001',
-        password,
-        role: 'verifier',
-        department: 'International Payments'
-      });
-      
+      fullName: 'Marene Lessing',
+      username: 'student_student',
+      employeeId: 'EMP002',
+      password: testPassword, // ⚡ plain text
+      role: 'verifier',
+      department: 'International Payments',
+      isActive: true
+    });
 
-    console.log('Created employee:', employee);
+    console.log('✅ Created employee successfully:');
+    console.log({
+      id: employee._id,
+      fullName: employee.fullName,
+      username: employee.username,
+      employeeId: employee.employeeId,
+      role: employee.role,
+      department: employee.department,
+      password: employee.password // plain text
+    });
+
+    console.log('\n🎯 Ready to login via Postman!');
   } catch (error) {
-    console.error('Error creating employee:', error);
+    console.error('❌ Error creating employee:', error);
   } finally {
-    mongoose.connection.close();
-    console.log('MongoDB connection closed');
+    await mongoose.connection.close();
+    console.log('\n✓ MongoDB connection closed');
   }
 };
 
-createEmployee();
+createEmployee().catch(err => {
+  console.error('Fatal error:', err);
+  process.exit(1);
+});

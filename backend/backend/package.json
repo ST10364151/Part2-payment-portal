@@ -8,7 +8,8 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "seed": "node seed.js",
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "echo \"No tests yet\" && exit 0",
+    "debug": "node src/scripts/debugAuth.js"
   },
   "keywords": [
     "payments",
@@ -19,9 +20,11 @@
   "author": "ST10320489",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.12.2",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.6.1",
     "express": "^4.18.2",
     "express-brute": "^1.0.1",
     "express-mongo-sanitize": "^2.2.0",
@@ -31,10 +34,13 @@
     "hpp": "^0.2.3",
     "iconv-lite": "^0.7.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.0.3"
+    "mongoose": "^8.0.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "vite": "^7.1.9"
   },
   "engines": {
     "node": ">=18.0.0",

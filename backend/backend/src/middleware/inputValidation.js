@@ -20,7 +20,7 @@
 const PATTERNS = {
     // User Information
     fullName: /^[a-zA-Z\s'-]{2,100}$/,
-    username: /^[a-zA-Z0-9_-]{3,30}$/,
+    username: /^[a-zA-Z0-9._-]{3,30}$/,
     
     // South African ID Number (13 digits, specific format)
     idNumber: /^[0-9]{13}$/,
