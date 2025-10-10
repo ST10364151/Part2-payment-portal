@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import './EmployeeDashboard.css';
@@ -11,6 +11,20 @@ function EmployeeDashboard() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const navigate = useNavigate();
+
+  const fetchTransactions = useCallback(async () => {
+    try {
+      const endpoint = filter === 'pending' 
+        ? '/employee/transactions/pending' 
+        : '/employee/transactions/all';
+      
+      const response = await api.get(endpoint);
+      setTransactions(response.data.transactions);
+    } catch (err) {
+      console.error('Failed to fetch transactions:', err);
+      setMessage({ type: 'error', text: 'Failed to load transactions' });
+    }
+  }, [filter]);
 
   useEffect(() => {
     const storedEmployee = localStorage.getItem('employee');
@@ -27,21 +41,7 @@ function EmployeeDashboard() {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     
     fetchTransactions();
-  }, [navigate, filter]);
-
-  const fetchTransactions = async () => {
-    try {
-      const endpoint = filter === 'pending' 
-        ? '/employee/transactions/pending' 
-        : '/employee/transactions/all';
-      
-      const response = await api.get(endpoint);
-      setTransactions(response.data.transactions);
-    } catch (err) {
-      console.error('Failed to fetch transactions:', err);
-      setMessage({ type: 'error', text: 'Failed to load transactions' });
-    }
-  };
+  }, [navigate, filter, fetchTransactions]);
 
   const handleVerify = async (transactionId) => {
     setLoading(true);
