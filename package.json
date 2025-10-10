@@ -1,0 +1,19 @@
+{
+  "name": "secure-international-payments-portal",
+  "version": "1.0.0",
+  "description": "Secure International Payments Portal with Customer and Employee Dashboards",
+  "scripts": {
+    "install": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start"
+  },
+  "keywords": ["payments", "banking", "security", "swift"],
+  "author": "Student",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
