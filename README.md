@@ -24,7 +24,7 @@ A full-stack secure banking application for international payments with SWIFT in
 [https://youtu.be/VnbEgFjNX70](https://youtu.be/VnbEgFjNX70)
 
 ### Code Implementation and Demonstration: 
-part 1: [https://youtu.be/-1POBNHC-mU](https://youtu.be/odEApifJag4)
+part 1: [https://youtu.be/odEApifJag4](https://youtu.be/odEApifJag4)
 part 2: [https://youtu.be/SAdY_OpfqRs](https://youtu.be/SAdY_OpfqRs)
 
 ### Github Repository: 
