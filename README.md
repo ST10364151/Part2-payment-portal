@@ -3,6 +3,7 @@
 A full-stack secure banking application for international payments with SWIFT integration, featuring customer and employee portals with advanced security measures.
 
 ## Table of Contents
+- [Important Links](#important-links)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Security Features](#security-features)
@@ -14,6 +15,18 @@ A full-stack secure banking application for international payments with SWIFT in
 - [Test Credentials](#test-credentials)
 - [Security Implementations](#security-implementations)
 - [Troubleshooting](#troubleshooting)
+
+---
+
+## Important links: 
+### Setting Up the project: 
+https://youtu.be/VnbEgFjNX70
+
+### Code Implementation and Demonstration: 
+https://youtu.be/-1POBNHC-mU
+
+### Github Repository: 
+https://github.com/ST10364151/Part2-payment-portal.git
 
 ---
 
@@ -260,7 +273,7 @@ This project uses **MongoDB Atlas** - a cloud-hosted MongoDB database.
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 secure-payments-portal/
@@ -485,9 +498,9 @@ Password:        Test123!
 - View transactions
 - Password strength meter
 
-### Employee Accounts
+### Employee Account
 
-#### 1. Administrator
+####  Administrator
 
 ```
 Username:  mike.admin
@@ -530,7 +543,7 @@ This project demonstrates comprehensive security implementations as required:
 
 ---
 
-### 2. Input Whitelisting & Validation (8-10 marks) ✅
+### 2. Input Whitelisting & Validation 
 
 #### Implementation:
 - **Comprehensive RegEx patterns** for all input fields
@@ -551,7 +564,7 @@ This project demonstrates comprehensive security implementations as required:
 
 ---
 
-### 3. Brute Force Protection (8-10 marks) ✅
+### 3. Brute Force Protection 
 
 #### Implementation:
 - **Rate limiting** using express-rate-limit
@@ -581,7 +594,7 @@ This project demonstrates comprehensive security implementations as required:
 
 ---
 
-### 4. SSL/TLS Implementation (8-10 marks) ✅
+### 4. SSL/TLS Implementation 
 
 #### Implementation:
 - **HTTPS only** - no HTTP access
@@ -604,24 +617,24 @@ This project demonstrates comprehensive security implementations as required:
 
 ### Additional Security Features
 
-#### 5. JWT Authentication ✅
+#### 5. JWT Authentication 
 - Stateless token-based authentication
 - 24-hour token expiry
 - Role-based access control (customer/employee)
 - Token validation on every request
 
-#### 6. Security Headers (Helmet.js) ✅
+#### 6. Security Headers (Helmet.js) 
 - Content Security Policy (CSP)
 - X-Frame-Options: DENY
 - X-Content-Type-Options: nosniff
 - Referrer-Policy: same-origin
 
-#### 7. CORS Configuration ✅
+#### 7. CORS Configuration 
 - Restricted origins (localhost only in development)
 - Credentials enabled
 - Specific allowed methods
 
-#### 8. Request Logging ✅
+#### 8. Request Logging 
 - All requests logged with timestamp
 - IP address tracking
 - User agent logging
@@ -629,7 +642,7 @@ This project demonstrates comprehensive security implementations as required:
 
 ---
 
-## 🧪 Testing Guide
+##  Testing Guide
 
 ### Test Scenario 1: Customer Registration & Password Strength
 
@@ -734,7 +747,7 @@ This project demonstrates comprehensive security implementations as required:
 
 ---
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### Issue 1: SSL Certificate Error in Browser
 
@@ -861,13 +874,6 @@ npm install
 
 ---
 
-## 📧 Support & Contact
-
-For questions or issues:
-- **Email**: st10320489@vcconnect.edu.za
-- **GitHub**: [Repository Issues](https://github.com/yourusername/secure-payments-portal/issues)
-
----
 
 ## ⚠️ Security Notice
 
@@ -875,61 +881,18 @@ For questions or issues:
 
 The database credentials and secrets in this submission are for **academic demonstration only**:
 
-- ✅ Used for coursework evaluation
-- ⚠️ Not suitable for production use
-- 🔒 Will be rotated/revoked after grading
+-  Used for coursework evaluation
+-  Not suitable for production use
+-  Will be rotated/revoked after grading
 
 **In Production Environment:**
 - Never commit `.env` files to version control
-- Use environment-specific secrets management (AWS Secrets Manager, Azure Key Vault)
+- Use environment-specific secrets management 
 - Rotate credentials regularly
 - Implement IP whitelisting on database
 - Use read-only users for demos
 - Enable database audit logging
 - Set up monitoring and alerts
-
----
-
-## 📄 License & Attribution
-
-**Course**: APDS7311 - Application Development Security
-**Student**: ST10320489
-**Year**: 2025
-**Institution**: Varsity College
-
-This project demonstrates secure coding practices and implements industry-standard security measures for a financial application.
-
----
-
-## 🎓 Learning Outcomes Demonstrated
-
-### Security Implementation
-✅ Password hashing (bcrypt + pepper)
-✅ Input validation & sanitization
-✅ Rate limiting & brute force protection
-✅ SSL/TLS encryption
-✅ JWT authentication
-✅ Security headers (Helmet.js)
-✅ CORS configuration
-✅ Error handling & logging
-
-### Full-Stack Development
-✅ React frontend with modern UI/UX
-✅ Node.js/Express backend
-✅ MongoDB Atlas cloud database
-✅ RESTful API design
-✅ Responsive design
-✅ State management
-✅ Form validation
-
-### DevOps & Best Practices
-✅ Environment configuration
-✅ Code organization & structure
-✅ Git version control
-✅ Documentation (README)
-✅ Error handling
-✅ Logging & monitoring
-✅ Testing workflows
 
 ---
 
@@ -941,19 +904,11 @@ This project demonstrates secure coding practices and implements industry-standa
 
 ```bash
 # Clone repository
-git clone <repo-url>
-cd secure-payments-portal
+git clone https://github.com/ST10364151/Part2-payment-portal.git
+cd Part2-payment-portal
 
 # Install all dependencies
 npm install
-
-# Generate SSL certificates
-cd backend/ssl
-openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
-cd ../..
-
-# Create frontend .env
-echo "REACT_APP_API_URL=https://localhost:3001/api" > frontend/.env
 
 # Run application
 npm run dev
@@ -963,4 +918,4 @@ npm run dev
 # Backend: https://localhost:3001
 ```
 
-**That's it! Start testing with the credentials provided above.** 🎉
+**That's it! Start testing with the credentials provided above.** 
