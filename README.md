@@ -8,6 +8,7 @@ A full-stack secure banking application for international payments with SWIFT in
 - [Tech Stack](#tech-stack)
 - [Security Features](#security-features)
 - [Prerequisites](#prerequisites)
+- [⚠️ CRITICAL: SSL Certificates](#️-critical-ssl-certificates)
 - [Installation & Setup](#installation--setup)
 - [Running the Application](#running-the-application)
 - [Project Structure](#project-structure)
@@ -27,7 +28,7 @@ part 1: [https://youtu.be/-1POBNHC-mU](https://youtu.be/odEApifJag4)
 part 2: [https://youtu.be/SAdY_OpfqRs](https://youtu.be/SAdY_OpfqRs)
 
 ### Github Repository: 
-https:[//github.com/ST10364151/Part2-payment-portal.git](//github.com/ST10364151/Part2-payment-portal.git)
+https://github.com/ST10364151/Part2-payment-portal.git
 
 ---
 
@@ -108,37 +109,103 @@ https:[//github.com/ST10364151/Part2-payment-portal.git](//github.com/ST10364151
 
 ---
 
-##  Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
 - **Node.js** (v16 or higher) - [Download](https://nodejs.org/)
 - **Git** - [Download](https://git-scm.com/downloads)
+- **OpenSSL** (for generating SSL certificates)
+  - **macOS**: Already installed
+  - **Linux**: `sudo apt-get install openssl` or `sudo yum install openssl`
+  - **Windows**: Included with Git Bash, or download from [slproweb.com](https://slproweb.com/products/Win32OpenSSL.html)
 - **npm** (comes with Node.js)
 
 > ⚠️ **MongoDB Installation NOT Required** - This project uses MongoDB Atlas (cloud database)
 
 ---
 
-##  Installation & Setup
+## ⚠️ CRITICAL: SSL Certificates
 
-### Step 1: Clone the Repository
+**SSL certificates are NOT included in this repository for security reasons.**
+
+Each user **MUST generate their own SSL certificates** on their machine. Without these certificates, the application **WILL NOT RUN**.
+
+
+### What You'll See Without Certificates:
+
+```
+❌ ERR_EMPTY_RESPONSE
+❌ "This site can't provide a secure connection"
+❌ "localhost didn't send any data"
+```
+
+### ✅ Solution:
+
+Follow Step 4 in the installation guide below to generate certificates. **DO NOT SKIP THIS STEP.**
+
+---
+
+## Installation & Setup
+
+### Quick Setup (Recommended)
+
+**For macOS/Linux:**
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/ST10364151/Part2-payment-portal.git
+cd Part2-payment-portal
+
+# 2. Run the automated setup script
+chmod +x setup.sh
+./setup.sh
+
+# 3. Start the application
+npm run dev
+```
+
+**For Windows:**
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/ST10364151/Part2-payment-portal.git
+cd Part2-payment-portal
+
+# 2. Run the automated setup script
+setup.bat
+
+# 3. Start the application (if not already started by setup.bat)
+npm run dev
+```
+
+The setup script will:
+- ✅ Check prerequisites (Node.js, OpenSSL)
+- ✅ Install all dependencies
+- ✅ **Generate SSL certificates for YOUR machine**
+- ✅ Verify installation
+
+---
+
+### Manual Setup (If Setup Script Fails)
+
+#### Step 1: Clone the Repository
 
 ```bash
 git clone https://github.com/ST10364151/Part2-payment-portal.git
 cd Part2-payment-portal
 ```
 
-### Step 2: Install Dependencies
+#### Step 2: Install Dependencies
 
-#### Option A: Install All at Once (Recommended)
+**Option A: Install All at Once (Recommended)**
 ```bash
 npm install
 ```
 
 This will install dependencies for both frontend and backend automatically.
 
-#### Option B: Install Separately
+**Option B: Install Separately**
 ```bash
 # Backend dependencies
 cd backend
@@ -150,17 +217,17 @@ npm install
 cd ..
 ```
 
-### Step 3: Environment Configuration
+#### Step 3: Environment Configuration
 
-#### Backend Environment Variables
+**The `.env` files are pre-configured.** Verify they exist:
 
-**The `backend/.env` file should already be configured.** Verify it contains:
-
+**Backend `.env`:**
 ```bash
 cd backend
 cat .env
 ```
 
+Should contain:
 ```env
 NODE_ENV=production
 PORT=3001
@@ -173,49 +240,125 @@ SSL_KEY_PATH=./ssl/key.pem
 SSL_CERT_PATH=./ssl/cert.pem
 ```
 
-> ✅ **Cloud Database Pre-configured**: The application connects to MongoDB Atlas automatically. No local database setup required!
-
-#### Frontend Environment Variables
-
-**The `frontend/.env` file should already be configured.** Verify it contains:
-
-
-```env
+**Frontend `.env`:**
+```bash
 cd frontend
-echo "REACT_APP_API_URL=https://localhost:3001/api" > .env
 cat .env
 ```
 
-Or copy from example:
+Should contain:
+```env
+REACT_APP_API_URL=https://localhost:3001/api
+```
+
+If the frontend `.env` doesn't exist:
 ```bash
 cd frontend
-cp .env.example .env
+echo "REACT_APP_API_URL=https://localhost:3001/api" > .env
 cd ..
 ```
 
-### Step 4: Generate SSL Certificates (Development)
+#### Step 4: Generate SSL Certificates (MANDATORY - DO NOT SKIP)
 
+**This is the most critical step. The application WILL NOT work without SSL certificates.**
+
+##### For macOS/Linux:
+
+```bash
+# Navigate to backend directory
+cd backend
+
+# Create ssl directory if it doesn't exist
+mkdir -p ssl
+
+# Navigate into ssl directory
+cd ssl
+
+# Generate SSL certificate and private key
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+
+# Return to project root
+cd ../..
+```
+
+##### For Windows (using Git Bash or PowerShell):
+
+**Option 1 - Git Bash (Recommended):**
 ```bash
 cd backend
 mkdir -p ssl
 cd ssl
-
-# Generate self-signed certificate
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
-
 cd ../..
 ```
 
-When prompted, you can press Enter to skip all questions or fill in:
-- Country: ZA
-- State: Gauteng
-- City: Johannesburg
-- Organization: SecureBank
-- Common Name: localhost
+**Option 2 - PowerShell:**
+```powershell
+cd backend
+New-Item -ItemType Directory -Force -Path ssl
+cd ssl
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+cd ../..
+```
+
+##### Certificate Generation Prompts:
+
+When running the OpenSSL command, you'll be prompted for information. You can either:
+
+**Option A: Press Enter to skip all prompts**
+
+**Option B: Fill in the following (recommended for proper certificates):**
+```
+Country Name (2 letter code): ZA
+State or Province Name: Gauteng
+Locality Name (eg, city): Johannesburg
+Organization Name: SecureBank
+Organizational Unit Name: Development
+Common Name (e.g. server FQDN): localhost
+Email Address: [press Enter to skip]
+```
+
+##### Verify SSL Certificates Were Created:
+
+```bash
+# Check that both files exist
+ls backend/ssl/
+
+# Expected output:
+# cert.pem
+# key.pem
+```
+
+If you see both files, you're ready to proceed! ✅
+
+#### Step 5: Verify Complete Setup
+
+Before running the application, verify your setup:
+
+```bash
+# Check Node.js version
+node --version
+# Should show v16.x.x or higher
+
+# Check that dependencies are installed
+ls node_modules
+ls backend/node_modules
+ls frontend/node_modules
+
+# Verify SSL certificates exist
+ls backend/ssl/key.pem backend/ssl/cert.pem
+# Both files should be listed
+
+# Check .env files exist
+cat backend/.env
+cat frontend/.env
+```
+
+If all checks pass, you're ready to run the application! ✅
 
 ---
 
-##  Running the Application
+## Running the Application
 
 ### Option 1: Run Both Servers Together (Recommended)
 
@@ -229,15 +372,30 @@ This starts both backend and frontend concurrently:
 - ✅ Backend: `https://localhost:3001` (connects to cloud database)
 - ✅ Frontend: `http://localhost:3000`
 
+You should see output like:
+```
+[0] ╔════════════════════════════════════════════════════════════════╗
+[0] ║   Secure International Payments Portal                         ║
+[0] ║   Server running on: https://localhost:3001                    ║
+[0] ║   SSL/TLS: ✓ Enabled                                           ║
+[0] ║   Database: ✓ Connected                                        ║
+[0] ║   Certificates: ✓ Valid                                        ║
+[0] ╚════════════════════════════════════════════════════════════════╝
+
+[1] Compiled successfully!
+[1] You can now view frontend in the browser.
+[1] Local: http://localhost:3000
+```
+
 ### Option 2: Run Servers Separately
 
-#### Terminal 1 - Backend:
+**Terminal 1 - Backend:**
 ```bash
 cd backend
 npm run dev
 ```
 
-#### Terminal 2 - Frontend:
+**Terminal 2 - Frontend:**
 ```bash
 cd frontend
 npm start
@@ -246,18 +404,42 @@ npm start
 ### Accessing the Application
 
 1. **Homepage**: Navigate to `http://localhost:3000`
-2. **Accept SSL Warning**: First time accessing backend, your browser will show a security warning
-   - In Chrome: Type `thisisunsafe` (invisible typing)
-   - In Firefox: Click "Advanced" → "Accept the Risk"
-3. **Start Testing**: Use the credentials below
+
+2. **Accept SSL Warning**: The first time accessing the backend, your browser will show a security warning about the self-signed certificate.
+
+   **Chrome:**
+   - You'll see "Your connection is not private"
+   - Type `thisisunsafe` anywhere on the page (the typing is invisible)
+   - Page will reload and allow the connection
+
+   **Firefox:**
+   - Click "Advanced"
+   - Click "Accept the Risk and Continue"
+
+   **Safari:**
+   - Click "Show Details"
+   - Click "visit this website"
+   - Click "Visit Website" again to confirm
+
+   **Edge:**
+   - Click "Advanced"
+   - Click "Continue to localhost (unsafe)"
+
+   > 💡 This warning is normal for self-signed certificates in development. In production, you would use certificates from a trusted Certificate Authority (CA).
+
+3. **Verify Backend is Running**: 
+   - Visit `https://localhost:3001/api/health`
+   - You should see: `{"status":"healthy","timestamp":"...","ssl":true}`
+
+4. **Start Testing**: Use the credentials in the [Test Credentials](#-test-credentials) section below
 
 ---
 
-##  Database Configuration
+## Database Configuration
 
 ### Cloud Database (MongoDB Atlas)
 
-This project uses **MongoDB Atlas** - a cloud-hosted MongoDB database. 
+This project uses **MongoDB Atlas** - a cloud-hosted MongoDB database.
 
 **Key Benefits:**
 - ✅ No local MongoDB installation required
@@ -274,7 +456,7 @@ This project uses **MongoDB Atlas** - a cloud-hosted MongoDB database.
 
 ---
 
-##  Project Structure
+## Project Structure
 
 ```
 secure-payments-portal/
@@ -303,8 +485,10 @@ secure-payments-portal/
 │   │   │   └── validators.js           # Custom validators
 │   │   └── server.js                   # Main server file
 │   ├── ssl/
-│   │   ├── key.pem                     # SSL private key
-│   │   └── cert.pem                    # SSL certificate
+│   │   ├── .gitkeep                    # Keeps directory in Git
+│   │   ├── README.md                   # SSL certificate instructions
+│   │   ├── key.pem                     # SSL private key (generated locally)
+│   │   └── cert.pem                    # SSL certificate (generated locally)
 │   ├── .env                            # Environment variables
 │   └── package.json
 ├── frontend/
@@ -323,164 +507,15 @@ secure-payments-portal/
 │   │   └── index.js                    # React entry point
 │   ├── .env                            # Frontend environment variables
 │   └── package.json
+├── setup.sh                            # Automated setup script (macOS/Linux)
+├── setup.bat                           # Automated setup script (Windows)
 ├── package.json                        # Root package (run both servers)
 └── README.md                           # This file
 ```
 
 ---
 
-##  API Documentation
-
-### Base URL
-```
-https://localhost:3001/api
-```
-
-### Authentication Endpoints
-
-#### Customer Registration
-```http
-POST /api/auth/customer/register
-Content-Type: application/json
-
-{
-  "fullName": "John Doe",
-  "username": "johndoe",
-  "idNumber": "9001015009087",
-  "accountNumber": "1234567890123",
-  "password": "SecurePass123!"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Registration successful",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "507f1f77bcf86cd799439011",
-    "fullName": "John Doe",
-    "username": "johndoe",
-    "accountNumber": "1234567890123",
-    "role": "customer"
-  }
-}
-```
-
-#### Customer Login
-```http
-POST /api/auth/customer/login
-Content-Type: application/json
-
-{
-  "username": "johndoe",
-  "accountNumber": "1234567890123",
-  "password": "SecurePass123!"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Login successful",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "507f1f77bcf86cd799439011",
-    "fullName": "John Doe",
-    "username": "johndoe",
-    "accountNumber": "1234567890123",
-    "role": "customer"
-  }
-}
-```
-
-#### Employee Login
-```http
-POST /api/auth/employee/login
-Content-Type: application/json
-
-{
-  "username": "mike.admin",
-  "password": "Admin@789"
-}
-```
-
-### Customer Endpoints
-
-#### Create Payment
-```http
-POST /api/customer/payment
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "amount": 1000.50,
-  "currency": "USD",
-  "provider": "SWIFT",
-  "payeeName": "Jane Smith",
-  "payeeAccountNumber": "9876543210123",
-  "swiftCode": "ABCDZAJJ"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Payment created successfully and sent for verification",
-  "transaction": {
-    "id": "507f1f77bcf86cd799439011",
-    "transactionRef": "TXN-1234567890",
-    "amount": 1000.50,
-    "currency": "USD",
-    "payeeName": "Jane Smith",
-    "status": "pending",
-    "createdAt": "2025-10-10T12:00:00.000Z"
-  }
-}
-```
-
-#### Get My Transactions
-```http
-GET /api/customer/transactions?page=1&limit=10&status=pending
-Authorization: Bearer <token>
-```
-
-### Employee Endpoints
-
-#### Get Pending Transactions
-```http
-GET /api/employee/transactions/pending?page=1&limit=50
-Authorization: Bearer <token>
-```
-
-#### Verify Transaction
-```http
-PUT /api/employee/transactions/:id/verify
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "notes": "Verified - all details correct"
-}
-```
-
-#### Submit to SWIFT
-```http
-POST /api/employee/transactions/submit
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "transactionIds": ["507f1f77bcf86cd799439011", "507f191e810c19729de860ea"]
-}
-```
-
----
-
-##  Test Credentials
+## Test Credentials
 
 The cloud database is **pre-populated** with test accounts. Use these credentials to test the application:
 
@@ -501,7 +536,7 @@ Password:        Test123!
 
 ### Employee Account
 
-####  Administrator
+#### Administrator
 
 ```
 Username:  mike.admin
@@ -520,266 +555,92 @@ Department: IT Security
 
 ---
 
-##  Security Implementations
+## Troubleshooting
 
-This project demonstrates comprehensive security implementations as required:
+###  Issue 1: ERR_EMPTY_RESPONSE or "This site can't provide a secure connection"
 
-### 1. Password Security (8-10 marks) 
+**Symptoms:**
+- Backend won't start
+- Browser shows "ERR_EMPTY_RESPONSE"
+- "localhost didn't send any data"
+- Console shows "ENOENT: no such file or directory, open './ssl/key.pem'"
 
-#### Implementation:
-- **bcrypt hashing** with 12 salt rounds
-- **Application-level pepper** for additional security layer
-- **Password strength validation** with multiple criteria
-- **Real-time strength meter** in UI
-- **Luhn algorithm** for SA ID number validation
+**Cause:** SSL certificates are missing or invalid.
 
-#### Files:
-- `backend/src/utils/passwordUtils.js`
-- `frontend/src/components/Register.js` (strength meter)
+**Solution:**
 
-#### Testing:
-1. Try registering with weak password → Rejected
-2. Watch strength meter change in real-time
-3. Password stored as hash in database (never plain text)
+```bash
+# Navigate to backend/ssl directory
+cd backend/ssl
 
----
+# Remove any existing certificates
+rm -f *.pem *.key *.crt *.csr
 
-### 2. Input Whitelisting & Validation 
+# Generate new certificates
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=ZA/ST=Gauteng/L=Johannesburg/O=SecureBank/CN=localhost"
 
-#### Implementation:
-- **Comprehensive RegEx patterns** for all input fields
-- **SQL/NoSQL injection prevention** through pattern detection
-- **XSS attack prevention** with HTML entity encoding
-- **Command injection prevention**
-- **Path traversal prevention**
-- **Context-aware validation** for different input types
+# Verify files were created
+ls -la
+# Should show: cert.pem and key.pem
 
-#### Files:
-- `backend/src/middleware/inputValidation.js`
-- `backend/src/utils/validators.js`
+# Return to project root and restart
+cd ../..
+npm run dev
+```
 
-#### Testing:
-1. Try entering `<script>alert('XSS')</script>` → Blocked
-2. Try SQL injection: `' OR 1=1--` → Blocked
-3. Try invalid SWIFT code format → Rejected with specific error
-
----
-
-### 3. Brute Force Protection 
-
-#### Implementation:
-- **Rate limiting** using express-rate-limit
-  - 5 login attempts per 15 minutes per IP
-  - 20 payment attempts per hour per IP
-- **Account lockout mechanism**
-  - 5 failed login attempts = temporary lock
-  - Exponential backoff
-- **Login attempt tracking** in database
-- **Real-time attempt counter** shown to user
-
-#### Files:
-- `backend/src/middleware/rateLimiting.js`
-- `backend/src/models/Customer.js` (lockout logic)
-- `backend/src/models/Employee.js` (lockout logic)
-
-#### Testing:
-1. **Test Rate Limiting:**
-   - Try logging in with wrong password 3 times
-   - See "3 attempts remaining" warning
-   - Try 2 more times
-   - Account locks with "Account Temporarily Locked" message
-
-2. **Test IP-based Rate Limiting:**
-   - Try 6+ login attempts rapidly
-   - Get "Too many login attempts" error
+**For Windows:**
+```cmd
+cd backend\ssl
+del *.pem *.key *.crt *.csr
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=ZA/ST=Gauteng/L=Johannesburg/O=SecureBank/CN=localhost"
+dir
+cd ..\..
+npm run dev
+```
 
 ---
 
-### 4. SSL/TLS Implementation 
-
-#### Implementation:
-- **HTTPS only** - no HTTP access
-- **TLS 1.2+** minimum version
-- **Strong cipher suites** configured
-- **HSTS headers** (HTTP Strict Transport Security)
-- **Certificate pinning** in development
-
-#### Files:
-- `backend/src/server.js` (SSL configuration)
-- `backend/ssl/` (certificates)
-
-#### Testing:
-1. Try accessing `http://localhost:3001` → Refused
-2. Access `https://localhost:3001/api/health` → Works
-3. Check browser security indicators
-4. Inspect network tab → All requests use HTTPS
-
----
-
-### Additional Security Features
-
-#### 5. JWT Authentication 
-- Stateless token-based authentication
-- 24-hour token expiry
-- Role-based access control (customer/employee)
-- Token validation on every request
-
-#### 6. Security Headers (Helmet.js) 
-- Content Security Policy (CSP)
-- X-Frame-Options: DENY
-- X-Content-Type-Options: nosniff
-- Referrer-Policy: same-origin
-
-#### 7. CORS Configuration 
-- Restricted origins (localhost only in development)
-- Credentials enabled
-- Specific allowed methods
-
-#### 8. Request Logging 
-- All requests logged with timestamp
-- IP address tracking
-- User agent logging
-- Audit trail for compliance
-
----
-
-##  Testing Guide
-
-### Test Scenario 1: Customer Registration & Password Strength
-
-1. Navigate to `http://localhost:3000`
-2. Click "Get Started" or "Register"
-3. Fill in the form:
-   ```
-   Full Name: Test User
-   Username: testuser2
-   ID Number: 9001015009087
-   Account Number: 1234567890124
-   Password: weak
-   ```
-4. **Observe**: Password strength meter shows "WEAK" in red
-5. **Change password to**: `SecurePass123!`
-6. **Observe**: Meter changes to "STRONG" in green
-7. Click Register
-8. **Success**: Redirected to login
-
----
-
-### Test Scenario 2: Account Lockout Protection
-
-1. Go to Customer Login
-2. Enter:
-   ```
-   Username: testuser
-   Account Number: 1234567890123
-   Password: WrongPassword123!
-   ```
-3. **Attempt 1**: "Invalid password" error
-4. **Attempt 2**: "Invalid password" + "3 attempts remaining" (orange warning)
-5. **Attempt 3**: "Invalid password" + "2 attempts remaining" (red warning)
-6. **Attempt 4**: "Invalid password" + "1 attempt remaining" (red warning)
-7. **Attempt 5**: "Account Temporarily Locked" message, login disabled
-8. **Wait 15 minutes** OR use correct password to unlock
-
----
-
-### Test Scenario 3: International Payment Flow
-
-#### As Customer:
-1. Login with: `testuser / 1234567890123 / Test123!`
-2. Fill payment form:
-   ```
-   Amount: 5000
-   Currency: USD
-   Provider: SWIFT
-   Payee Name: John Smith
-   Payee Account: 9876543210123
-   SWIFT Code: ABCDZAJJ
-   ```
-3. Click "Submit Payment"
-4. **Success**: Transaction created with "pending" status
-5. View in "My Transactions" section
-
-#### As Employee:
-1. Login with: `mike.admin / Admin@789`
-2. See the transaction in "Pending" tab
-3. Click "Verify Transaction"
-4. **Success**: Status changes to "verified"
-5. Select the transaction
-6. Click "Submit to SWIFT"
-7. **Success**: Status changes to "submitted"
-
-#### Back as Customer:
-1. Refresh transactions
-2. See transaction status updated to "submitted"
-3. View verification details (verified by, timestamp)
-
----
-
-### Test Scenario 4: Input Validation
-
-1. Try creating payment with invalid SWIFT code:
-   ```
-   SWIFT Code: ABC123  (too short)
-   ```
-   **Result**: "SWIFT code must be 8 or 11 characters" error
-
-2. Try registering with invalid ID number:
-   ```
-   ID Number: 123  (too short)
-   ```
-   **Result**: "ID Number must be exactly 13 digits" error
-
-3. Try injecting malicious code:
-   ```
-   Full Name: <script>alert('XSS')</script>
-   ```
-   **Result**: "Invalid characters detected" error
-
----
-
-### Test Scenario 5: Rate Limiting
-
-1. Open browser in incognito mode
-2. Try logging in 6 times rapidly with wrong password
-3. **Result**: "Too many login attempts. Please try again later."
-4. Wait 15 minutes
-5. **Result**: Can attempt login again
-
----
-
-##  Troubleshooting
-
-### Issue 1: SSL Certificate Error in Browser
+### Issue 2: SSL Certificate Error in Browser
 
 **Symptoms:**
 - Browser shows "Your connection is not private"
 - NET::ERR_CERT_AUTHORITY_INVALID error
 
 **Solution:**
-1. Click "Advanced"
-2. Click "Proceed to localhost (unsafe)"
-3. Or in Chrome: Type `thisisunsafe` anywhere on the page (invisible typing)
 
-> This is normal for self-signed certificates in development.
+This is **normal** for self-signed certificates in development.
+
+**Chrome:** Type `thisisunsafe` anywhere on the page (invisible typing)
+
+**Firefox:** Click "Advanced" → "Accept the Risk and Continue"
+
+**Safari:** Click "Show Details" → "visit this website"
+
+**Edge:** Click "Advanced" → "Continue to localhost (unsafe)"
+
+> This is safe for local development. In production, use certificates from a trusted CA.
 
 ---
 
-### Issue 2: Cannot Connect to Database
+### Issue 3: Cannot Connect to Database
 
 **Symptoms:**
 - "MongoDB Connection Error" in backend logs
 - Application won't start
 
 **Solution:**
+
 1. **Check internet connection** (cloud database requires internet)
-2. **Verify `.env` file** has correct `MONGODB_URI`
+2. **Verify `.env` file** has correct `MONGODB_URI`:
+   ```bash
+   cat backend/.env | grep MONGODB_URI
+   ```
 3. **Check MongoDB Atlas status**: https://status.mongodb.com/
-4. **Firewall issues**: Ensure port 27017 is not blocked
+4. **Firewall issues**: Ensure MongoDB Atlas IP (port 27017) is not blocked
 
 ---
 
-### Issue 3: Port Already in Use
+### Issue 4: Port Already in Use
 
 **Symptoms:**
 ```
@@ -790,14 +651,14 @@ Error: listen EADDRINUSE: address already in use :::3001
 
 **macOS/Linux:**
 ```bash
-# Find process on port 3001
-lsof -ti:3001
-
-# Kill the process
-lsof -ti:3001 | xargs kill
+# Find and kill process on port 3001
+lsof -ti:3001 | xargs kill -9
 
 # Or for port 3000
-lsof -ti:3000 | xargs kill
+lsof -ti:3000 | xargs kill -9
+
+# Then restart
+npm run dev
 ```
 
 **Windows:**
@@ -805,76 +666,119 @@ lsof -ti:3000 | xargs kill
 # Find process
 netstat -ano | findstr :3001
 
-# Kill process (replace PID with actual process ID)
+# Kill process (replace <PID> with actual process ID)
 taskkill /PID <PID> /F
+
+# Then restart
+npm run dev
 ```
 
 ---
 
-### Issue 4: Frontend Not Loading
+### Issue 5: Dependencies Won't Install
+
+**Symptoms:**
+- npm install errors
+- "Module not found" errors
+
+**Solution:**
+
+```bash
+# Clear npm cache
+npm cache clean --force
+
+# Delete all node_modules and package-lock files
+rm -rf node_modules package-lock.json
+rm -rf backend/node_modules backend/package-lock.json
+rm -rf frontend/node_modules frontend/package-lock.json
+
+# Reinstall everything
+npm install
+
+# Verify installation
+npm run dev
+```
+
+---
+
+### Issue 6: "Cannot find module 'openssl'"
+
+**Symptoms:**
+- Setup script fails
+- OpenSSL command not found
+
+**Solution:**
+
+**macOS:**
+```bash
+# OpenSSL is pre-installed, but if missing:
+brew install openssl
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt-get update
+sudo apt-get install openssl
+```
+
+**Linux (CentOS/RHEL):**
+```bash
+sudo yum install openssl
+```
+
+**Windows:**
+
+1. Download from: https://slproweb.com/products/Win32OpenSSL.html
+2. Install "Win64 OpenSSL v3.x.x Light"
+3. Add to PATH: `C:\Program Files\OpenSSL-Win64\bin`
+4. Restart terminal/command prompt
+5. Verify: `openssl version`
+
+---
+
+### Issue 7: Setup Script Won't Run (Permission Denied)
+
+**Symptoms:**
+```
+-bash: ./setup.sh: Permission denied
+```
+
+**Solution:**
+
+```bash
+# Make script executable
+chmod +x setup.sh
+
+# Run script
+./setup.sh
+```
+
+---
+
+### Issue 8: Frontend Not Loading
 
 **Symptoms:**
 - Blank page at `http://localhost:3000`
 - Console errors about API calls
 
 **Solution:**
-1. **Clear browser cache**: Ctrl+Shift+Delete
+
+1. **Clear browser cache**: Ctrl+Shift+Delete (Cmd+Shift+Delete on Mac)
 2. **Check backend is running**: Visit `https://localhost:3001/api/health`
-3. **Check console for errors**: F12 → Console tab
-4. **Verify `.env` file**: `REACT_APP_API_URL=https://localhost:3001/api`
+3. **Accept SSL certificate** (see Issue 2 above)
+4. **Check console for errors**: Press F12 → Console tab
+5. **Verify `.env` file**:
+   ```bash
+   cat frontend/.env
+   # Should show: REACT_APP_API_URL=https://localhost:3001/api
+   ```
+6. **Restart frontend**:
+   ```bash
+   cd frontend
+   npm start
+   ```
 
 ---
-
-### Issue 5: "Cannot GET /api/..." Error
-
-**Symptoms:**
-- 404 errors when making API calls
-- Routes not found
-
-**Solution:**
-1. **Check backend is running** on port 3001
-2. **Verify route prefix**: All routes should start with `/api/`
-3. **Check server.js**: Routes correctly mounted
-4. **Restart backend**: `cd backend && npm run dev`
-
----
-
-### Issue 6: Dependencies Won't Install
-
-**Symptoms:**
-- npm install errors
-- Module not found errors
-
-**Solution:**
-```bash
-# Clear npm cache
-npm cache clean --force
-
-# Delete node_modules
-rm -rf node_modules package-lock.json
-rm -rf backend/node_modules backend/package-lock.json
-rm -rf frontend/node_modules frontend/package-lock.json
-
-# Reinstall
-npm install
-```
-
----
-
-### Issue 7: Login Attempts Not Resetting
-
-**Symptoms:**
-- Account remains locked
-- Attempt counter not decreasing
-
-**Solution:**
-1. **Wait 15 minutes** for automatic reset
-2. **Use correct password** to immediately reset
-3. **Check MongoDB Atlas**: Verify `loginAttempts` field in database
-4. **Restart backend** to clear any cached state
-
----
-
 
 ## ⚠️ Security Notice
 
@@ -882,22 +786,19 @@ npm install
 
 The database credentials and secrets in this submission are for **academic demonstration only**:
 
--  Used for coursework evaluation
--  Not suitable for production use
--  Will be rotated/revoked after grading
+- ✅ Used for coursework evaluation
+- ✅ Not suitable for production use
+- ✅ Will be rotated/revoked after grading
 
 **In Production Environment:**
 - Never commit `.env` files to version control
-- Use environment-specific secrets management 
+- Never commit SSL private keys (`key.pem`) to Git
+- Use environment-specific secrets management
 - Rotate credentials regularly
 - Implement IP whitelisting on database
-- Use read-only users for demos
+- Use certificates from trusted Certificate Authority (CA)
 - Enable database audit logging
 - Set up monitoring and alerts
-
----
-
-**Built with ❤️ using React, Node.js, Express, and MongoDB Atlas**
 
 ---
 
@@ -908,15 +809,26 @@ The database credentials and secrets in this submission are for **academic demon
 git clone https://github.com/ST10364151/Part2-payment-portal.git
 cd Part2-payment-portal
 
-# Install all dependencies
-npm install
+# Option 1: Automated Setup (Recommended)
+chmod +x setup.sh
+./setup.sh
+npm run dev
 
-# Run application
+# Option 2: Manual Setup
+npm install
+cd backend/ssl
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+cd ../..
 npm run dev
 
 # Access application
 # Frontend: http://localhost:3000
 # Backend: https://localhost:3001
+# Health Check: https://localhost:3001/api/health
 ```
 
-**That's it! Start testing with the credentials provided above.** 
+**That's it! Start testing with the credentials provided above.**
+
+---
+
+**Built with ❤️ using React, Node.js, Express, and MongoDB Atlas**

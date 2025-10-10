@@ -4,6 +4,8 @@ events.EventEmitter.defaultMaxListeners = 20;
 
 import https from 'https';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import mongoose from 'mongoose';
 import helmet from 'helmet';
@@ -23,6 +25,10 @@ import employeeRoutes from './routes/employee.js';
 // Import middleware
 import { errorHandler } from './middleware/errorHandler.js';
 import { requestLogger } from './middleware/logger.js';
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables
 dotenv.config();
@@ -81,15 +87,10 @@ app.use(cors(corsOptions));
 // General API limiter applied to all /api routes
 app.use('/api/', apiLimiter);
 
-// Login limiter - apply to auth login endpoints. If your login endpoints are
-// /api/auth/customer/login and /api/auth/employee/login it might be better
-// to apply the limiter inside the auth router for specific routes.
-// For simplicity we apply to /api/auth/* (adjust if you want it narrower).
+// Login limiter - apply to auth login endpoints
 app.use('/api/auth', loginLimiter);
 
 // Payment limiter - apply to the payment creation route(s)
-// If your payment POST is exactly /api/customer/payment this will apply correctly.
-// Alternatively apply paymentLimiter inside the customer router for just the POST.
 app.use('/api/customer/payment', paymentLimiter);
 
 // ============================================================================
@@ -135,16 +136,90 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // ============================================================================
-// SSL/TLS CONFIGURATION
+// SSL/TLS CONFIGURATION WITH CERTIFICATE VALIDATION
 // ============================================================================
 const startServer = async () => {
   await connectDB();
 
   const PORT = process.env.PORT || 3001;
   
+  // Resolve SSL certificate paths
+  const sslKeyPath = process.env.SSL_KEY_PATH || path.join(__dirname, '../ssl/key.pem');
+  const sslCertPath = process.env.SSL_CERT_PATH || path.join(__dirname, '../ssl/cert.pem');
+  
+  // ============================================================================
+  // CHECK IF SSL CERTIFICATES EXIST
+  // ============================================================================
+  if (!fs.existsSync(sslKeyPath) || !fs.existsSync(sslCertPath)) {
+    console.error('\n╔════════════════════════════════════════════════════════════════╗');
+    console.error('║                                                                ║');
+    console.error('║   ❌ SSL CERTIFICATES NOT FOUND!                               ║');
+    console.error('║                                                                ║');
+    console.error('╚════════════════════════════════════════════════════════════════╝');
+    console.error('\n⚠️  SSL certificates are required but missing.');
+    console.error('   These certificates are machine-specific and must be');
+    console.error('   generated on YOUR computer.\n');
+    console.error('📋 To fix this, run ONE of these commands:\n');
+    console.error('   Option 1 - Automated (recommended):');
+    console.error('     ./setup.sh         (macOS/Linux)');
+    console.error('     setup.bat          (Windows)\n');
+    console.error('   Option 2 - Manual:');
+    console.error('     cd backend/ssl');
+    console.error('     openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes');
+    console.error('     cd ../..\n');
+    console.error('Missing files:');
+    if (!fs.existsSync(sslKeyPath)) console.error(`   ❌ ${sslKeyPath}`);
+    if (!fs.existsSync(sslCertPath)) console.error(`   ❌ ${sslCertPath}`);
+    console.error('\n════════════════════════════════════════════════════════════════\n');
+    process.exit(1);
+  }
+  
+  // ============================================================================
+  // VALIDATE SSL CERTIFICATE CONTENT
+  // ============================================================================
+  try {
+    const keyContent = fs.readFileSync(sslKeyPath, 'utf8');
+    const certContent = fs.readFileSync(sslCertPath, 'utf8');
+    
+    // Basic validation - check if files contain valid PEM headers
+    if (!keyContent.includes('BEGIN PRIVATE KEY') && !keyContent.includes('BEGIN RSA PRIVATE KEY')) {
+      throw new Error('Invalid private key format - missing PEM header');
+    }
+    
+    if (!certContent.includes('BEGIN CERTIFICATE')) {
+      throw new Error('Invalid certificate format - missing PEM header');
+    }
+    
+    // Check file sizes (certificates should be reasonably sized)
+    const keyStats = fs.statSync(sslKeyPath);
+    const certStats = fs.statSync(sslCertPath);
+    
+    if (keyStats.size < 100 || certStats.size < 100) {
+      throw new Error('Certificate files appear to be empty or corrupted');
+    }
+    
+  } catch (validationError) {
+    console.error('\n╔════════════════════════════════════════════════════════════════╗');
+    console.error('║                                                                ║');
+    console.error('║   ❌ SSL CERTIFICATE VALIDATION FAILED!                        ║');
+    console.error('║                                                                ║');
+    console.error('╚════════════════════════════════════════════════════════════════╝');
+    console.error(`\n⚠️  Error: ${validationError.message}\n`);
+    console.error('📋 Your certificates may be corrupted. Regenerate them:\n');
+    console.error('   cd backend/ssl');
+    console.error('   rm -f *.pem  # Remove old certificates');
+    console.error('   openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes');
+    console.error('   cd ../..\n');
+    console.error('════════════════════════════════════════════════════════════════\n');
+    process.exit(1);
+  }
+  
+  // ============================================================================
+  // CREATE SSL OPTIONS
+  // ============================================================================
   const sslOptions = {
-    key: fs.readFileSync(process.env.SSL_KEY_PATH || './ssl/key.pem'),
-    cert: fs.readFileSync(process.env.SSL_CERT_PATH || './ssl/cert.pem'),
+    key: fs.readFileSync(sslKeyPath),
+    cert: fs.readFileSync(sslCertPath),
     minVersion: 'TLSv1.2',
     ciphers: [
       'ECDHE-RSA-AES128-GCM-SHA256',
@@ -167,13 +242,25 @@ const startServer = async () => {
 ║   Environment: ${process.env.NODE_ENV || 'development'}        ║
 ║   SSL/TLS: ✓ Enabled                                           ║
 ║   Database: ✓ Connected                                        ║
+║   Certificates: ✓ Valid                                        ║
 ║                                                                ║
 ╚════════════════════════════════════════════════════════════════╝
     `);
   });
 
+  // Graceful shutdown
   process.on('SIGTERM', () => {
     console.log('SIGTERM received, closing server gracefully...');
+    httpsServer.close(() => {
+      mongoose.connection.close(false, () => {
+        console.log('Server closed');
+        process.exit(0);
+      });
+    });
+  });
+  
+  process.on('SIGINT', () => {
+    console.log('\nSIGINT received, closing server gracefully...');
     httpsServer.close(() => {
       mongoose.connection.close(false, () => {
         console.log('Server closed');
