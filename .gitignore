@@ -3,13 +3,13 @@ node_modules/
 frontend/node_modules/
 backend/node_modules/
 
-# For educational purposes it is commented out (Environment variables)
+# Environment variables
 # .env
 # frontend/.env
 # backend/.env
 
 # SSL Certificates
-backend/ssl/
+# backend/ssl/
 
 # Build files
 frontend/build/
