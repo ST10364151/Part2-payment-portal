@@ -20,13 +20,14 @@ A full-stack secure banking application for international payments with SWIFT in
 
 ## Important links: 
 ### Setting Up the project: 
-https://youtu.be/VnbEgFjNX70
+[https://youtu.be/VnbEgFjNX70](https://youtu.be/VnbEgFjNX70)
 
 ### Code Implementation and Demonstration: 
-https://youtu.be/-1POBNHC-mU
+part 1: [https://youtu.be/-1POBNHC-mU](https://youtu.be/odEApifJag4)
+part 2: [https://youtu.be/SAdY_OpfqRs](https://youtu.be/SAdY_OpfqRs)
 
 ### Github Repository: 
-https://github.com/ST10364151/Part2-payment-portal.git
+https:[//github.com/ST10364151/Part2-payment-portal.git](//github.com/ST10364151/Part2-payment-portal.git)
 
 ---
 
