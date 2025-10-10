@@ -142,6 +142,11 @@ cd ..
 
 **The `backend/.env` file should already be configured.** Verify it contains:
 
+```bash
+cd backend
+cat .env
+```
+
 ```env
 NODE_ENV=production
 PORT=3001
@@ -158,10 +163,13 @@ SSL_CERT_PATH=./ssl/cert.pem
 
 #### Frontend Environment Variables
 
-Create `frontend/.env` file:
+**The `frontend/.env` file should already be configured.** Verify it contains:
+
 
 ```env
-REACT_APP_API_URL=https://localhost:3001/api
+cd frontend
+echo "REACT_APP_API_URL=https://localhost:3001/api" > .env
+cat .env
 ```
 
 Or copy from example:
