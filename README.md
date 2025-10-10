@@ -112,7 +112,7 @@ Before you begin, ensure you have the following installed:
 
 ```bash
 git clone https://github.com/ST10364151/Part2-payment-portal.git
-cd secure-payments-portal
+cd Part2-payment-portal
 ```
 
 ### Step 2: Install Dependencies
