@@ -193,7 +193,7 @@ cp .env.example .env
 cd ..
 ```
 
-### Step 4: Generate SSL Certificates (Development)
+### Step 4: If you need to generate SSL Certificates (Development)
 
 ```bash
 cd backend
