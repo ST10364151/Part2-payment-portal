@@ -9,7 +9,10 @@ backend/node_modules/
 # backend/.env
 
 # SSL Certificates
-backend/ssl/
+backend/ssl/*.pem
+backend/ssl/*.key
+backend/ssl/*.crt
+backend/ssl/*.csr
 
 # Build files
 frontend/build/
