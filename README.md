@@ -111,7 +111,7 @@ Before you begin, ensure you have the following installed:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/secure-payments-portal.git
+git clone https://github.com/ST10364151/Part2-payment-portal.git
 cd secure-payments-portal
 ```
 
