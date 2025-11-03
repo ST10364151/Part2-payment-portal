@@ -20,7 +20,7 @@ jobs:
           name: Install Backend Dependencies
           command: |
             cd backend
-            npm ci
+            npm install
       - save_cache:
           key: backend-deps-v1-{{ checksum "backend/package-lock.json" }}
           paths:
@@ -56,7 +56,7 @@ jobs:
           name: Install Frontend Dependencies
           command: |
             cd frontend
-            npm ci
+            npm install
       - save_cache:
           key: frontend-deps-v1-{{ checksum "frontend/package-lock.json" }}
           paths:
