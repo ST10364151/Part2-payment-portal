@@ -8,7 +8,7 @@ jobs:
   # Build and test backend
   build-backend:
     docker:
-      - image: cimg/node:18.17
+      - image: cimg/node:20.0
     working_directory: ~/project
     steps:
       - checkout
@@ -44,7 +44,7 @@ jobs:
   # Build and test frontend
   build-frontend:
     docker:
-      - image: cimg/node:18.17
+      - image: cimg/node:20.0
     working_directory: ~/project
     steps:
       - checkout
@@ -80,7 +80,7 @@ jobs:
   # Security scanning with npm audit
   security-scan:
     docker:
-      - image: cimg/node:18.17
+      - image: cimg/node:20.0
     working_directory: ~/project
     steps:
       - checkout
@@ -98,7 +98,7 @@ jobs:
   # SonarQube/SonarCloud Analysis
   sonarqube-scan:
     docker:
-      - image: cimg/node:18.17
+      - image: cimg/node:20.0
     working_directory: ~/project
     steps:
       - checkout
@@ -123,4 +123,6 @@ workflows:
           requires:
             - build-backend
             - build-frontend
+
+
 
