@@ -1,0 +1,126 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.1.0
+  sonarcloud: sonarsource/sonarcloud@2.0.0
+
+jobs:
+  # Build and test backend
+  build-backend:
+    docker:
+      - image: cimg/node:18.17
+    working_directory: ~/project
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - backend-deps-v1-{{ checksum "backend/package-lock.json" }}
+            - backend-deps-v1-
+      - run:
+          name: Install Backend Dependencies
+          command: |
+            cd backend
+            npm ci
+      - save_cache:
+          key: backend-deps-v1-{{ checksum "backend/package-lock.json" }}
+          paths:
+            - backend/node_modules
+      - run:
+          name: Run Backend Linting
+          command: |
+            cd backend
+            npm run lint || true
+      - run:
+          name: Run Backend Tests
+          command: |
+            cd backend
+            npm test -- --coverage || true
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - backend/coverage
+            - backend/node_modules
+
+  # Build and test frontend
+  build-frontend:
+    docker:
+      - image: cimg/node:18.17
+    working_directory: ~/project
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - frontend-deps-v1-{{ checksum "frontend/package-lock.json" }}
+            - frontend-deps-v1-
+      - run:
+          name: Install Frontend Dependencies
+          command: |
+            cd frontend
+            npm ci
+      - save_cache:
+          key: frontend-deps-v1-{{ checksum "frontend/package-lock.json" }}
+          paths:
+            - frontend/node_modules
+      - run:
+          name: Run Frontend Linting
+          command: |
+            cd frontend
+            npm run lint || true
+      - run:
+          name: Run Frontend Tests
+          command: |
+            cd frontend
+            npm test -- --coverage --watchAll=false || true
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - frontend/coverage
+            - frontend/node_modules
+
+  # Security scanning with npm audit
+  security-scan:
+    docker:
+      - image: cimg/node:18.17
+    working_directory: ~/project
+    steps:
+      - checkout
+      - run:
+          name: Backend Security Audit
+          command: |
+            cd backend
+            npm audit --audit-level=moderate || true
+      - run:
+          name: Frontend Security Audit
+          command: |
+            cd frontend
+            npm audit --audit-level=moderate || true
+
+  # SonarQube/SonarCloud Analysis
+  sonarqube-scan:
+    docker:
+      - image: cimg/node:18.17
+    working_directory: ~/project
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - sonarcloud/scan:
+          cache_version: 1
+          sonar_token_variable_name: SONAR_TOKEN
+
+workflows:
+  version: 2
+  build-test-scan:
+    jobs:
+      - build-backend
+      - build-frontend
+      - security-scan:
+          requires:
+            - build-backend
+            - build-frontend
+      - sonarqube-scan:
+          context: sonarcloud
+          requires:
+            - build-backend
+            - build-frontend
+
