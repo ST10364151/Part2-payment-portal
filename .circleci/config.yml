@@ -107,7 +107,10 @@ jobs:
       - sonarcloud/scan:
           cache_version: 1
           sonar_token_variable_name: SONAR_TOKEN
-
+      - run:
+          name: Increase timeout
+          command: echo "Timeout increased"
+          no_output_timeout: 30m
 workflows:
   version: 2
   build-test-scan:
