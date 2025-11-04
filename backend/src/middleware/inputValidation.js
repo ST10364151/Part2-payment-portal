@@ -1,7 +1,7 @@
 // backend/src/middleware/inputValidation.js
 
 /**
- * EXCEPTIONAL INPUT WHITELISTING & VALIDATION (8-10 MARKS)
+ * EXCEPTIONAL INPUT WHITELISTING & VALIDATION
  * 
  * Features:
  * 1. Comprehensive RegEx patterns for all input fields
@@ -429,3 +429,65 @@ const PATTERNS = {
   
   // Export patterns for use in frontend validation
   export { PATTERNS };
+
+  
+/**
+ * Employee Create Customer Account Validation
+ */
+export const validateEmployeeCreateCustomer = (req, res, next) => {
+  const { fullName, idNumber, password } = req.body;
+  const errors = [];
+  
+  // Validate full name
+  if (!fullName || !validatePattern(fullName, 'fullName')) {
+    errors.push('Full name must contain only letters, spaces, hyphens, and apostrophes (2-100 characters)');
+  }
+  
+  // Check for dangerous patterns in name
+  const nameCheck = containsDangerousPattern(fullName);
+  if (nameCheck.dangerous) {
+    errors.push(`Invalid characters detected in full name`);
+  }
+  
+  // Validate ID Number
+  if (!idNumber || !validatePattern(idNumber, 'idNumber')) {
+    errors.push('ID number must be exactly 13 digits');
+  }
+  
+  // Additional SA ID validation - check date validity
+  if (idNumber && validatePattern(idNumber, 'idNumber')) {
+    const year = parseInt(idNumber.substring(0, 2));
+    const month = parseInt(idNumber.substring(2, 4));
+    const day = parseInt(idNumber.substring(4, 6));
+    
+    if (month < 1 || month > 12) {
+      errors.push('Invalid month in ID number');
+    }
+    if (day < 1 || day > 31) {
+      errors.push('Invalid day in ID number');
+    }
+  }
+  
+  // Validate password (strength check done separately in passwordUtils)
+  if (!password || password.length < 8 || password.length > 128) {
+    errors.push('Password must be between 8 and 128 characters');
+  }
+  
+  const passwordCheck = containsDangerousPattern(password);
+  if (passwordCheck.dangerous) {
+    errors.push('Password contains invalid characters');
+  }
+  
+  if (errors.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed',
+      errors
+    });
+  }
+  
+  // Sanitize inputs before passing to controller
+  req.body.fullName = sanitizeString(fullName);
+  
+  next();
+};

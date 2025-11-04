@@ -487,3 +487,326 @@
     flex-direction: column;
   }
 }
+
+/* Create Customer Button in Nav */
+.btn-create-customer {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 16px;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-create-customer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+}
+
+.btn-create-customer:active {
+  transform: translateY(0);
+}
+
+
+.welcome-banner {
+  background: rgba(33, 150, 243, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  box-shadow: 0 8px 32px rgba(33, 150, 243, 0.1);
+  animation: slideIn 0.3s ease;
+}
+
+.banner-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.banner-content h3 {
+  margin: 0 0 8px 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.banner-content p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Back Button for CreateCustomer Page */
+.back-button {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateX(-3px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+/* Success Container Styling */
+.success-container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.credentials-box {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.credentials-box h4 {
+  margin: 0 0 20px 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 16px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.credential-item {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+}
+
+.credential-item:last-child {
+  border-bottom: none;
+}
+
+.credential-item strong {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .btn-create-customer {
+    padding: 8px 16px;
+    font-size: 13px;
+    margin-right: 8px;
+  }
+  
+  .welcome-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .banner-icon {
+    font-size: 36px;
+  }
+  
+  .nav-right {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-create-customer {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 8px;
+  }
+}
+EOF
+cat /mnt/user-data/outputs/EmployeeDashboard-BUTTON-CSS.css
+Output
+
+/* Create Customer Button in Nav */
+.btn-create-customer {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 16px;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-create-customer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+}
+
+.btn-create-customer:active {
+  transform: translateY(0);
+}
+
+/* Welcome Banner for Managers/Admins */
+.welcome-banner {
+  background: rgba(33, 150, 243, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  box-shadow: 0 8px 32px rgba(33, 150, 243, 0.1);
+  animation: slideIn 0.3s ease;
+}
+
+.banner-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.banner-content h3 {
+  margin: 0 0 8px 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.banner-content p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Back Button for CreateCustomer Page */
+.back-button {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateX(-3px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+/* Success Container Styling */
+.success-container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.credentials-box {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.credentials-box h4 {
+  margin: 0 0 20px 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 16px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.credential-item {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+}
+
+.credential-item:last-child {
+  border-bottom: none;
+}
+
+.credential-item strong {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .btn-create-customer {
+    padding: 8px 16px;
+    font-size: 13px;
+    margin-right: 8px;
+  }
+  
+  .welcome-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .banner-icon {
+    font-size: 36px;
+  }
+  
+  .nav-right {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-create-customer {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 8px;
+  }
+}

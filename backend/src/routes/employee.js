@@ -1,8 +1,13 @@
+// ============================================================================
+// backend/src/routes/employee.js
+// ============================================================================
 import express from 'express';
 import { 
   getPendingTransactions,
   verifyTransaction,
-  submitToSwift
+  submitToSwift,
+  createCustomerAccount,
+  getAccountCreationLog
 } from '../controllers/employeeController.js';
 import { protect, restrictTo } from '../middleware/auth.js';
 import { validateTransactionId } from '../middleware/inputValidation.js';
@@ -18,5 +23,10 @@ routerEmp.get('/transactions/pending', getPendingTransactions);
 routerEmp.put('/transactions/:id/verify', validateTransactionId, verifyTransaction);
 routerEmp.post('/transactions/submit', submitToSwift);
 
-// Export the router as default
+// Customer account creation (Manager/Admin only)
+routerEmp.post('/create-customer', createCustomerAccount);
+
+// Account creation audit log (Admin only)
+routerEmp.get('/account-creation-log', getAccountCreationLog);
+
 export default routerEmp;

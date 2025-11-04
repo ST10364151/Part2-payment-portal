@@ -1,70 +1,75 @@
 // ============================================================================
-// backend/src/controllers/employeeController.js
+// backend/src/controllers/employeeController.js (UPDATED - Accept username & accountNumber)
 // ============================================================================
 
 import { Transaction } from '../models/Transaction.js';
 import { Employee } from '../models/Employee.js';
+import Customer from '../models/Customer.js';
+import { validatePasswordStrength } from '../utils/passwordUtils.js';
+import { validateSAIDNumber } from '../utils/validators.js';
 
 /**
  * Get all pending transactions for verification
  * GET /api/employee/transactions/pending
  */
-// export const getPendingTransactions = async (req, res) => {
-//   try {
-//     const { page = 1, limit = 20 } = req.query;
+export const getPendingTransactions = async (req, res) => {
+  try {
+    const { page = 1, limit = 50, status } = req.query;
     
-//     const skip = (parseInt(page) - 1) * parseInt(limit);
+    const skip = (parseInt(page) - 1) * parseInt(limit);
     
-//     const transactions = await Transaction.find({ 
-//       status: { $in: ['pending', 'verified'] }
-//     })
-//       .sort({ createdAt: -1 })
-//       .limit(parseInt(limit))
-//       .skip(skip)
-//       .populate('customerId', 'fullName username')
-//       .populate('verifiedBy', 'fullName employeeId');
+    // Build query - if status is provided, filter by it, otherwise show all
+    const query = status ? { status } : { status: { $in: ['pending', 'verified', 'submitted'] } };
     
-//     const total = await Transaction.countDocuments({ 
-//       status: { $in: ['pending', 'verified'] }
-//     });
+    const transactions = await Transaction.find(query)
+      .sort({ createdAt: -1 }) // Newest first
+      .limit(parseInt(limit))
+      .skip(skip)
+      .populate('customerId', 'fullName username accountNumber')
+      .populate('verifiedBy', 'fullName employeeId');
     
-//     res.json({
-//       success: true,
-//       count: transactions.length,
-//       total,
-//       page: parseInt(page),
-//       pages: Math.ceil(total / parseInt(limit)),
-//       transactions: transactions.map(t => ({
-//         id: t._id,
-//         transactionRef: t.transactionRef,
-//         customer: {
-//           name: t.customerName,
-//           accountNumber: t.customerAccountNumber
-//         },
-//         amount: t.amount,
-//         currency: t.currency,
-//         payeeName: t.payeeName,
-//         payeeAccountNumber: t.payeeAccountNumber,
-//         swiftCode: t.swiftCode,
-//         provider: t.provider,
-//         status: t.status,
-//         createdAt: t.createdAt,
-//         verifiedBy: t.verifiedBy ? {
-//           name: t.verifiedBy.fullName,
-//           employeeId: t.verifiedBy.employeeId
-//         } : null,
-//         verifiedAt: t.verifiedAt
-//       }))
-//     });
+    const total = await Transaction.countDocuments(query);
     
-//   } catch (error) {
-//     console.error('Get pending transactions error:', error);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Error fetching transactions'
-//     });
-//   }
-// };
+    res.json({
+      success: true,
+      count: transactions.length,
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / parseInt(limit)),
+      transactions: transactions.map(t => ({
+        id: t._id,
+        transactionRef: t.transactionRef,
+        customerName: t.customerName,
+        customerAccountNumber: t.customerAccountNumber,
+        customer: t.customerId ? {
+          name: t.customerId.fullName,
+          accountNumber: t.customerId.accountNumber
+        } : null,
+        amount: t.amount,
+        currency: t.currency,
+        payeeName: t.payeeName,
+        payeeAccountNumber: t.payeeAccountNumber,
+        swiftCode: t.swiftCode,
+        provider: t.provider,
+        status: t.status,
+        createdAt: t.createdAt,
+        verifiedBy: t.verifiedBy ? {
+          name: t.verifiedBy.fullName,
+          employeeId: t.verifiedBy.employeeId
+        } : null,
+        verifiedAt: t.verifiedAt,
+        submittedAt: t.submittedAt
+      }))
+    });
+    
+  } catch (error) {
+    console.error('Get transactions error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching transactions'
+    });
+  }
+};
 
 /**
  * Verify a transaction
@@ -183,66 +188,151 @@ export const submitToSwift = async (req, res) => {
   }
 };
 
+/**
+ * Create Customer Account 
+ * POST /api/employee/create-customer
+ */
+export const createCustomerAccount = async (req, res) => {
+  try {
+    const { fullName, username, idNumber, accountNumber, password } = req.body;
+    
+    console.log('👤 Employee creating customer account:', { 
+      employeeId: req.userId, 
+      employeeRole: req.user.role,
+      customerName: fullName,
+      username,
+      accountNumber
+    });
+    
+    // Check employee role (only managers and admins can create accounts)
+    if (req.user.role !== 'manager' && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Only Managers and Admins can create customer accounts'
+      });
+    }
+    
+    // Validate SA ID Number with Luhn algorithm
+    if (!validateSAIDNumber(idNumber)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid South African ID number'
+      });
+    }
+    
+    // Validate password strength
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.isValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password does not meet security requirements',
+        errors: passwordValidation.errors
+      });
+    }
+    
+    // Check if customer already exists
+    const existingCustomer = await Customer.findOne({
+      $or: [{ username }, { idNumber }, { accountNumber }]
+    });
+    
+    if (existingCustomer) {
+      let field = 'User';
+      if (existingCustomer.username === username) field = 'Username';
+      else if (existingCustomer.idNumber === idNumber) field = 'ID number';
+      else if (existingCustomer.accountNumber === accountNumber) field = 'Account number';
+      
+      return res.status(400).json({
+        success: false,
+        message: `${field} already registered`
+      });
+    }
+    
+    // Create customer account
+    const customer = await Customer.create({
+      fullName,
+      username,
+      idNumber,
+      accountNumber,
+      password, // Will be hashed by pre-save hook
+      createdBy: req.userId,
+      isActive: true
+    });
+    
+    // Log account creation for audit trail
+    console.log('Customer account created:', {
+      customerId: customer._id,
+      accountNumber: customer.accountNumber,
+      username: customer.username,
+      createdBy: req.user.fullName,
+      employeeId: req.user.employeeId,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Return account details (to give to customer)
+    res.status(201).json({
+      success: true,
+      message: 'Customer account created successfully',
+      account: {
+        fullName: customer.fullName,
+        username: customer.username,
+        accountNumber: customer.accountNumber,
+        idNumber: customer.idNumber,
+        createdAt: customer.createdAt
+      }
+    });
+    
+  } catch (error) {
+    console.error('Create customer account error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating customer account',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
 
 /**
- * Get all transactions (pending, verified, and submitted)
- * GET /api/employee/transactions/pending
+ * Get Account Creation Audit Log (Admin only)
+ * GET /api/employee/account-creation-log
  */
-export const getPendingTransactions = async (req, res) => {
+export const getAccountCreationLog = async (req, res) => {
   try {
-    const { page = 1, limit = 50, status } = req.query;
+    // Only admins can view full audit log
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Only Admins can view account creation logs'
+      });
+    }
     
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    
-    // Build query - if status is provided, filter by it, otherwise show all
-    const query = status ? { status } : { status: { $in: ['pending', 'verified', 'submitted'] } };
-    
-    const transactions = await Transaction.find(query)
-      .sort({ createdAt: -1 }) // Newest first
-      .limit(parseInt(limit))
-      .skip(skip)
-      .populate('customerId', 'fullName username accountNumber')
-      .populate('verifiedBy', 'fullName employeeId');
-    
-    const total = await Transaction.countDocuments(query);
+    const customers = await Customer.find()
+      .select('fullName username accountNumber createdBy createdAt')
+      .populate('createdBy', 'fullName employeeId role')
+      .sort({ createdAt: -1 })
+      .limit(100);
     
     res.json({
       success: true,
-      count: transactions.length,
-      total,
-      page: parseInt(page),
-      pages: Math.ceil(total / parseInt(limit)),
-      transactions: transactions.map(t => ({
-        id: t._id,
-        transactionRef: t.transactionRef,
-        customerName: t.customerName,
-        customerAccountNumber: t.customerAccountNumber,
-        customer: t.customerId ? {
-          name: t.customerId.fullName,
-          accountNumber: t.customerId.accountNumber
+      count: customers.length,
+      accounts: customers.map(c => ({
+        customerId: c._id,
+        fullName: c.fullName,
+        username: c.username,
+        accountNumber: c.accountNumber,
+        createdBy: c.createdBy ? {
+          name: c.createdBy.fullName,
+          employeeId: c.createdBy.employeeId,
+          role: c.createdBy.role
         } : null,
-        amount: t.amount,
-        currency: t.currency,
-        payeeName: t.payeeName,
-        payeeAccountNumber: t.payeeAccountNumber,
-        swiftCode: t.swiftCode,
-        provider: t.provider,
-        status: t.status,
-        createdAt: t.createdAt,
-        verifiedBy: t.verifiedBy ? {
-          name: t.verifiedBy.fullName,
-          employeeId: t.verifiedBy.employeeId
-        } : null,
-        verifiedAt: t.verifiedAt,
-        submittedAt: t.submittedAt
+        createdAt: c.createdAt
       }))
     });
     
   } catch (error) {
-    console.error('Get transactions error:', error);
+    console.error('Get account creation log error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching transactions'
+      message: 'Error fetching account creation log'
     });
   }
 };

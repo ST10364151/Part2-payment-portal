@@ -1,3 +1,6 @@
+// ============================================================================
+// frontend/src/components/EmployeeDashboard.jsx 
+// ============================================================================
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -98,7 +101,14 @@ function EmployeeDashboard() {
     navigate('/employee/login');
   };
 
+  const handleCreateCustomer = () => {
+    navigate('/employee/create-customer');
+  };
+
   if (!employee) return null;
+
+  // Check if employee can create customer accounts (only managers and admins)
+  const canCreateCustomers = employee.employeeRole === 'manager' || employee.employeeRole === 'admin';
 
   // Filter transactions based on selected filter
   const filteredTransactions = transactions.filter(txn => {
@@ -114,14 +124,34 @@ function EmployeeDashboard() {
   return (
     <div className="employee-dashboard">
       <nav className="employee-nav">
-        <h1>Employee Portal - Transaction Verification</h1>
+        <h1>Employee Portal - {employee.employeeRole || employee.role}</h1>
         <div className="nav-right">
-          <span>{employee.fullName} ({employee.employeeRole || employee.role})</span>
+          {canCreateCustomers && (
+            <button onClick={handleCreateCustomer} className="btn-create-customer">
+              ➕ Create Customer Account
+            </button>
+          )}
+          <span>{employee.fullName}</span>
           <button onClick={handleLogout} className="btn-secondary">Logout</button>
         </div>
       </nav>
 
       <div className="employee-content">
+        {/* Role-based welcome message */}
+        {canCreateCustomers && (
+          <div className="welcome-banner">
+            <div className="banner-icon">👤</div>
+            <div className="banner-content">
+              <h3>Welcome, {employee.fullName}</h3>
+              <p>
+                {employee.employeeRole === 'manager' 
+                  ? 'As a Manager, you can create customer accounts and verify transactions.'
+                  : 'As an Admin, you have full access to all portal features including account creation and transaction approval.'}
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="controls-section">
           <div className="filter-buttons">
             <button 

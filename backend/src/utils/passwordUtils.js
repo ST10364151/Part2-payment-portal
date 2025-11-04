@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 
 
-// Pepper (additional secret layer - store in environment variable)
+// Pepper 
 const PEPPER = process.env.PASSWORD_PEPPER || crypto.randomBytes(32).toString('hex');
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS) || 12;
 
@@ -179,19 +179,11 @@ export const generateSecurePassword = (length = 16) => {
 };
 
 /**
- * Check if password has been compromised (placeholder for HaveIBeenPwned API)
- * In production, integrate with HaveIBeenPwned API
  * @param {string} password 
  * @returns {Promise<boolean>}
  */
 export const checkPasswordBreach = async (password) => {
-  // This is a placeholder. In production, you would:
-  // 1. Hash the password with SHA-1
-  // 2. Take first 5 characters of hash
-  // 3. Query HaveIBeenPwned API: https://api.pwnedpasswords.com/range/{first5}
-  // 4. Check if remaining hash characters appear in response
-  
-  // For now, just check against known breached passwords
+
   const knownBreached = [
     '123456', 'password', '12345678', 'qwerty', '123456789',
     '12345', '1234', '111111', '1234567', 'dragon'

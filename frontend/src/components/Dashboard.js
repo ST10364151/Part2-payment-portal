@@ -1,3 +1,6 @@
+// ============================================================================
+// frontend/src/components/Dashboard.jsx
+// ============================================================================
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -25,7 +28,17 @@ function Dashboard() {
       navigate('/login');
       return;
     }
-    setUser(JSON.parse(storedUser));
+    
+    const userData = JSON.parse(storedUser);
+    
+    // Check if password change is required
+    if (userData.requirePasswordChange) {
+      console.log('⚠️ Password change required - redirecting');
+      navigate('/change-password', { state: { firstLogin: true } });
+      return;
+    }
+    
+    setUser(userData);
     fetchTransactions();
   }, [navigate]);
 
@@ -46,9 +59,26 @@ function Dashboard() {
   };
 
   const validateSwiftCode = (code) => {
-    // SWIFT code must be 8 or 11 characters, all uppercase letters and numbers
-    const swiftRegex = /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/;
-    return swiftRegex.test(code);
+    
+    // Remove spaces and convert to uppercase
+    const cleanCode = code.replace(/\s/g, '').toUpperCase();
+    
+    // Must be 8 or 11 characters
+    if (cleanCode.length !== 8 && cleanCode.length !== 11) {
+      return false;
+    }
+    
+    // First 6 characters must be letters (bank code + country code)
+    if (!/^[A-Z]{6}/.test(cleanCode)) {
+      return false;
+    }
+    
+    // Remaining characters can be letters or digits
+    if (!/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(cleanCode)) {
+      return false;
+    }
+    
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -56,17 +86,25 @@ function Dashboard() {
     setError('');
     setSuccess('');
 
-    // Validate SWIFT code
-    if (!validateSwiftCode(formData.swiftCode)) {
-      setError('SWIFT code must be 8 or 11 characters (e.g., ABCDEF12 or ABCDEF12345)');
+    // Clean and validate SWIFT code
+    const cleanSwiftCode = formData.swiftCode.replace(/\s/g, '').toUpperCase();
+    
+    if (!validateSwiftCode(cleanSwiftCode)) {
+      setError('SWIFT code must be 8 or 11 characters. Format: AAAABBCCXXX (e.g., ABCDZAJJ or ABCDZAJJXXX)');
       return;
     }
 
     setLoading(true);
 
     try {
-      const response = await api.post('/customer/payment', formData);
-      setSuccess('Payment submitted successfully and sent for verification!');
+      // Send with cleaned SWIFT code
+      const paymentData = {
+        ...formData,
+        swiftCode: cleanSwiftCode
+      };
+      
+      const response = await api.post('/customer/payment', paymentData);
+      setSuccess('✅ Payment submitted successfully and sent for verification!');
       setFormData({
         amount: '',
         currency: 'USD',
@@ -185,11 +223,14 @@ function Dashboard() {
                 onChange={handleChange}
                 required
                 maxLength="11"
-                placeholder="e.g., ABCDEF12 or ABCDEF12345"
+                placeholder="e.g., ABCDZAJJ or ABCDZAJJXXX"
                 style={{textTransform: 'uppercase'}}
               />
               <small style={{color: '#666', fontSize: '12px', marginTop: '5px', display: 'block'}}>
-                Must be 8 or 11 uppercase characters (letters and numbers only)
+                8 or 11 characters. Format: Bank(4) + Country(2) + Location(2) + Branch(3, optional)
+              </small>
+              <small style={{color: '#999', fontSize: '11px', marginTop: '3px', display: 'block'}}>
+                Examples: ABCDZAJJ, DEUTDEFF, CHASUS33 or with branch: ABCDZAJJXXX
               </small>
             </div>
 
