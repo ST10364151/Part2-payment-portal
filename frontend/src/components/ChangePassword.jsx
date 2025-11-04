@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// ============================================================================
+// frontend/src/components/ChangePassword.jsx
+// ============================================================================
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
 import './Auth.css';
 
-function Register() {
+function ChangePassword() {
   const [formData, setFormData] = useState({
-    fullName: '',
-    username: '',
-    idNumber: '',
-    accountNumber: '',
-    password: '',
+    currentPassword: '',
+    newPassword: '',
     confirmPassword: ''
   });
   const [errors, setErrors] = useState([]);
@@ -17,6 +17,17 @@ function Register() {
   const [loading, setLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({ score: 0, level: 'none' });
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const isFirstLogin = location.state?.firstLogin || false;
+
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   const calculatePasswordStrength = (password) => {
     if (!password) return { score: 0, level: 'none', feedback: [] };
@@ -94,12 +105,13 @@ function Register() {
     });
     
     // Calculate password strength in real-time
-    if (name === 'password') {
+    if (name === 'newPassword') {
       setPasswordStrength(calculatePasswordStrength(value));
     }
     
     // Clear errors when user starts typing
     setErrors([]);
+    setSuccess('');
   };
 
   const validatePassword = (password) => {
@@ -121,59 +133,54 @@ function Register() {
     setSuccess('');
     setLoading(true);
 
-    console.log('🔄 Registration attempt:', {
-      fullName: formData.fullName,
-      username: formData.username,
-      idNumber: formData.idNumber,
-      accountNumber: formData.accountNumber
-    });
-
     const validationErrors = [];
 
     // Client-side validation
-    if (formData.password !== formData.confirmPassword) {
-      validationErrors.push('Passwords do not match');
+    if (formData.newPassword !== formData.confirmPassword) {
+      validationErrors.push('New passwords do not match');
     }
 
-    if (!validatePassword(formData.password)) {
-      validationErrors.push('Password must be at least 8 characters with uppercase, lowercase, number and special character (@$!%*?&)');
+    if (!validatePassword(formData.newPassword)) {
+      validationErrors.push('New password must be at least 8 characters with uppercase, lowercase, number and special character (@$!%*?&)');
     }
 
     if (passwordStrength.level === 'weak') {
-      validationErrors.push('Password is too weak. Please choose a stronger password.');
+      validationErrors.push('New password is too weak. Please choose a stronger password.');
     }
 
-    if (formData.idNumber.length !== 13) {
-      validationErrors.push('ID Number must be exactly 13 digits');
-    }
-
-    if (formData.accountNumber.length < 10 || formData.accountNumber.length > 16) {
-      validationErrors.push('Account Number must be between 10-16 digits');
+    if (formData.currentPassword === formData.newPassword) {
+      validationErrors.push('New password must be different from current password');
     }
 
     if (validationErrors.length > 0) {
-      console.log('Client-side validation failed:', validationErrors);
       setErrors(validationErrors);
       setLoading(false);
       return;
     }
 
     try {
-      const { confirmPassword, ...dataToSend } = formData;
+      const response = await api.post('/auth/change-password', {
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword
+      });
       
-      console.log('📤 Sending registration request...');
-      const response = await api.post('/auth/customer/register', dataToSend);
-      console.log('✅ Registration successful:', response.data);
+      console.log('Password changed successfully:', response.data);
       
-      setSuccess('✅ Registration successful! Redirecting to login...');
+      setSuccess('Password changed successfully! Redirecting to dashboard...');
+      
+      // Update user data to remove requirePasswordChange flag
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user) {
+        user.requirePasswordChange = false;
+        localStorage.setItem('user', JSON.stringify(user));
+      }
       
       setTimeout(() => {
-        navigate('/login');
+        navigate('/dashboard');
       }, 2000);
       
     } catch (err) {
-      console.error('❌ Registration error:', err);
-      console.error('Error response:', err.response?.data);
+      console.error('Password change error:', err);
       
       let errorMessages = [];
       
@@ -181,10 +188,8 @@ function Register() {
         errorMessages = err.response.data.errors;
       } else if (err.response?.data?.message) {
         errorMessages = [err.response.data.message];
-      } else if (err.response?.data?.error) {
-        errorMessages = [err.response.data.error];
       } else {
-        errorMessages = ['Registration failed. Please try again.'];
+        errorMessages = ['Password change failed. Please try again.'];
       }
       
       setErrors(errorMessages);
@@ -193,90 +198,65 @@ function Register() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2>Customer Registration</h2>
+        <h2>Change Password</h2>
+        
+        {isFirstLogin && (
+          <div style={{
+            background: 'rgba(255, 193, 7, 0.1)',
+            border: '1px solid rgba(255, 193, 7, 0.3)',
+            padding: '15px',
+            borderRadius: '8px',
+            marginBottom: '20px',
+            fontSize: '14px',
+            color: '#ffc107'
+          }}>
+            <strong>⚠️ First Login - Password Change Required</strong>
+            <p style={{margin: '8px 0 0 0', color: '#666', fontSize: '13px'}}>
+              For security reasons, you must change your temporary password before accessing your account.
+            </p>
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Full Name</label>
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-              placeholder="e.g., John Doe"
-              autoComplete="name"
-            />
-            <small style={{color: 'rgba(255,255,255,0.6)', fontSize: '12px', marginTop: '5px', display: 'block'}}>
-              Only letters and spaces (2-100 characters)
-            </small>
-          </div>
-
-          <div className="form-group">
-            <label>Username</label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              placeholder="e.g., johndoe"
-              autoComplete="username"
-            />
-            <small style={{color: 'rgba(255,255,255,0.6)', fontSize: '12px', marginTop: '5px', display: 'block'}}>
-              3-30 characters (letters, numbers, underscore)
-            </small>
-          </div>
-
-          <div className="form-group">
-            <label>ID Number</label>
-            <input
-              type="text"
-              name="idNumber"
-              value={formData.idNumber}
-              onChange={handleChange}
-              required
-              maxLength="13"
-              placeholder="e.g., 9001010001088"
-              autoComplete="off"
-            />
-            <small style={{color: 'rgba(255,255,255,0.6)', fontSize: '12px', marginTop: '5px', display: 'block'}}>
-              Exactly 13 digits (validated with Luhn algorithm)
-            </small>
-          </div>
-
-          <div className="form-group">
-            <label>Account Number</label>
-            <input
-              type="text"
-              name="accountNumber"
-              value={formData.accountNumber}
-              onChange={handleChange}
-              required
-              placeholder="e.g., 1234567890"
-              autoComplete="off"
-            />
-            <small style={{color: 'rgba(255,255,255,0.6)', fontSize: '12px', marginTop: '5px', display: 'block'}}>
-              10-16 digits
-            </small>
-          </div>
-
-          <div className="form-group">
-            <label>Password</label>
+            <label>Current Password</label>
             <input
               type="password"
-              name="password"
-              value={formData.password}
+              name="currentPassword"
+              value={formData.currentPassword}
               onChange={handleChange}
               required
-              placeholder="Example: SecurePass123!"
+              placeholder="Enter your current password"
+              autoComplete="current-password"
+            />
+            <small style={{color: 'rgba(255,255,255,0.6)', fontSize: '12px', marginTop: '5px', display: 'block'}}>
+              The temporary password provided by the bank
+            </small>
+          </div>
+
+          <div className="form-group">
+            <label>New Password</label>
+            <input
+              type="password"
+              name="newPassword"
+              value={formData.newPassword}
+              onChange={handleChange}
+              required
+              placeholder="Enter your new password"
               autoComplete="new-password"
             />
             
             {/* Password Strength Meter */}
-            {formData.password && (
+            {formData.newPassword && (
               <div style={{marginTop: '10px'}}>
                 <div style={{
                   display: 'flex',
@@ -336,14 +316,14 @@ function Register() {
           </div>
 
           <div className="form-group">
-            <label>Confirm Password</label>
+            <label>Confirm New Password</label>
             <input
               type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              placeholder="Re-enter your password"
+              placeholder="Re-enter your new password"
               autoComplete="new-password"
             />
           </div>
@@ -359,16 +339,46 @@ function Register() {
           {success && <div className="success-message">{success}</div>}
 
           <button type="submit" disabled={loading} className="btn-primary">
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? 'Changing Password...' : 'Change Password'}
           </button>
         </form>
 
-        <p className="auth-link">
-          Already have an account? <a href="/login">Login here</a>
-        </p>
+        {!isFirstLogin && (
+          <button onClick={() => navigate('/dashboard')} className="btn-secondary" style={{marginTop: '12px', width: '100%'}}>
+            Cancel
+          </button>
+        )}
+
+        {isFirstLogin && (
+          <div style={{
+            marginTop: '20px',
+            padding: '15px',
+            background: 'rgba(239, 68, 68, 0.1)',
+            borderRadius: '8px',
+            fontSize: '13px',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            textAlign: 'center'
+          }}>
+            <p style={{margin: 0, color: '#666'}}>
+              You must change your password to continue.
+            </p>
+            <button onClick={handleLogout} style={{
+              marginTop: '10px',
+              padding: '8px 16px',
+              background: 'transparent',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: '#666',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '12px'
+            }}>
+              Logout
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-export default Register;
+export default ChangePassword;

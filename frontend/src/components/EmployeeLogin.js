@@ -28,26 +28,26 @@ function EmployeeLogin() {
     setError('');
     setLoading(true);
 
-    console.log('🔄 Employee login attempt:', formData.username);
+    console.log('Employee login attempt:', formData.username);
 
     try {
-      console.log('📤 Sending request to /auth/employee/login');
+      console.log('Sending request to /auth/employee/login');
       const response = await api.post('/auth/employee/login', formData);
       
-      console.log('✅ Login successful:', response.data);
+      console.log('Login successful:', response.data);
       
       localStorage.setItem('employeeToken', response.data.token);
       localStorage.setItem('employee', JSON.stringify(response.data.user));
       
       navigate('/employee/dashboard');
     } catch (err) {
-      console.error('❌ Login error:', err);
-      console.error('❌ Error response:', err.response?.data);
+      console.error('Login error:', err);
+      console.error('Error response:', err.response?.data);
       
       const status = err.response?.status;
       const data = err.response?.data;
       
-      // Handle different error scenarios (same as customer login)
+      // Handle different error scenarios 
       if (status === 423) {
         setAccountLocked(true);
         setLockUntil(data.lockUntil);

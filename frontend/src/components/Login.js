@@ -1,3 +1,6 @@
+// ============================================================================
+// frontend/src/components/Login.jsx
+// ============================================================================
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -47,8 +50,14 @@ function Login() {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
-      console.log('➡️ Navigating to dashboard...');
-      navigate('/dashboard');
+      // Check if password change is required (first login)
+      if (response.data.user.requirePasswordChange) {
+        console.log('⚠️ Password change required - redirecting to change password page');
+        navigate('/change-password', { state: { firstLogin: true } });
+      } else {
+        console.log('➡️ Navigating to dashboard...');
+        navigate('/dashboard');
+      }
       
     } catch (err) {
       console.error('❌ Login failed:', err);
@@ -212,9 +221,23 @@ function Login() {
           </ul>
         </div>
 
-        <p className="auth-link">
-          Don't have an account? <a href="/register">Register here</a>
-        </p>
+        {/* Removed Register Link - Accounts created by employees only */}
+        <div style={{
+          marginTop: '20px',
+          padding: '15px',
+          background: 'rgba(255, 193, 7, 0.1)',
+          borderRadius: '8px',
+          fontSize: '13px',
+          border: '1px solid rgba(255, 193, 7, 0.3)',
+          textAlign: 'center'
+        }}>
+          <strong style={{color: '#ffc107', display: 'block', marginBottom: '8px'}}>
+            📋 New Customer?
+          </strong>
+          <p style={{margin: 0, color: '#666', fontSize: '12px'}}>
+            Please visit your nearest branch to open an account. Our staff will create your credentials and provide them securely.
+          </p>
+        </div>
 
         <div style={{
           marginTop: '20px',

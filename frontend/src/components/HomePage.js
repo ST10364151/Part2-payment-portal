@@ -1,3 +1,6 @@
+// ============================================================================
+// frontend/src/components/HomePage.jsx 
+// ============================================================================
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
@@ -24,8 +27,9 @@ function HomePage() {
   }, []);
 
   const handleGetStarted = () => {
+    // Both customer and employee go to their respective logins
     if (userType === 'customer') {
-      navigate('/register');
+      navigate('/login');
     } else {
       navigate('/employee/login');
     }
@@ -102,7 +106,7 @@ function HomePage() {
               Sign In
             </button>
             <button className="btn-primary" onClick={handleGetStarted}>
-              {userType === 'customer' ? 'Get Started' : 'Staff Portal'}
+              {userType === 'customer' ? 'Customer Login' : 'Staff Portal'}
             </button>
           </div>
         </div>
@@ -139,12 +143,12 @@ function HomePage() {
 
             <div className="hero-buttons">
               <button className="btn-hero-primary" onClick={handleGetStarted}>
-                {userType === 'customer' ? 'Open Account' : 'Access Portal'}
+                {userType === 'customer' ? 'Customer Login' : 'Access Portal'}
                 <span className="btn-arrow">→</span>
               </button>
               <button className="btn-hero-secondary" onClick={handleLogin}>
                 <span className="play-icon">▶</span>
-                {userType === 'customer' ? 'Watch Demo' : 'Sign In'}
+                Sign In
               </button>
             </div>
 
@@ -257,7 +261,7 @@ function HomePage() {
             </div>
 
             <button className="btn-security" onClick={handleGetStarted}>
-              {userType === 'customer' ? 'Start Secure Banking' : 'Access Staff Portal'}
+              {userType === 'customer' ? 'Customer Login' : 'Access Staff Portal'}
             </button>
           </div>
 
@@ -287,7 +291,7 @@ function HomePage() {
           </p>
           <div className="cta-buttons">
             <button className="btn-cta-primary" onClick={handleGetStarted}>
-              {userType === 'customer' ? 'Open Your Account' : 'Staff Login'}
+              {userType === 'customer' ? 'Customer Login' : 'Staff Login'}
             </button>
             <button className="btn-cta-secondary" onClick={handleLogin}>
               Sign In
