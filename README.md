@@ -2,13 +2,17 @@
 
 A full-stack secure banking application for international payments with SWIFT integration, featuring customer and employee portals with advanced security measures.
 
+## Authors:
+ST10089153 Charne Janse van Rensburg, ST10320489 Marene van der Merwe and ST10364151 Ryan Stratford
+
+
 ## Table of Contents
 - [Important Links](#important-links)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Security Features](#security-features)
 - [Prerequisites](#prerequisites)
-- [CRITICAL: SSL Certificates](#critical-ssl-certificates)
+- [CRITICAL: SSL Certificates](#critical-ssl-certificates) and 
 - [Installation & Setup](#installation--setup)
 - [Running the Application](#running-the-application)
 - [Project Structure](#project-structure)
@@ -28,7 +32,7 @@ A full-stack secure banking application for international payments with SWIFT in
 part 1: [https://youtu.be/odEApifJag4](https://youtu.be/odEApifJag4)
 part 2: [https://youtu.be/SAdY_OpfqRs](https://youtu.be/SAdY_OpfqRs)
 
-### DevSecOps CI/CD Pipeline with CircleCI and SonarCloud:
+### Final POE Showcasing:
 [https://youtu.be/VNd0L2NnGfo?si=qAeSrOaVyvNzB3vq](https://youtu.be/VNd0L2NnGfo?si=qAeSrOaVyvNzB3vq)
 
 ### Github Repository: 
