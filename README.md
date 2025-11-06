@@ -8,7 +8,7 @@ A full-stack secure banking application for international payments with SWIFT in
 - [Tech Stack](#tech-stack)
 - [Security Features](#security-features)
 - [Prerequisites](#prerequisites)
-- [⚠️ CRITICAL: SSL Certificates](#️-critical-ssl-certificates)
+- [CRITICAL: SSL Certificates](#critical-ssl-certificates)
 - [Installation & Setup](#installation--setup)
 - [Running the Application](#running-the-application)
 - [Project Structure](#project-structure)
@@ -16,6 +16,7 @@ A full-stack secure banking application for international payments with SWIFT in
 - [Test Credentials](#test-credentials)
 - [Security Implementations](#security-implementations)
 - [Troubleshooting](#troubleshooting)
+- [References](#references)
 
 ---
 
@@ -27,6 +28,9 @@ A full-stack secure banking application for international payments with SWIFT in
 part 1: [https://youtu.be/odEApifJag4](https://youtu.be/odEApifJag4)
 part 2: [https://youtu.be/SAdY_OpfqRs](https://youtu.be/SAdY_OpfqRs)
 
+### DevSecOps CI/CD Pipeline with CircleCI and SonarCloud:
+[https://youtu.be/VNd0L2NnGfo?si=qAeSrOaVyvNzB3vq](https://youtu.be/VNd0L2NnGfo?si=qAeSrOaVyvNzB3vq)
+
 ### Github Repository: 
 https://github.com/ST10364151/Part2-payment-portal.git
 
@@ -35,31 +39,31 @@ https://github.com/ST10364151/Part2-payment-portal.git
 ## Features
 
 ### Customer Portal
-- ✅ Secure user registration with password strength validation
-- ✅ Multi-factor authentication (Username + Account Number)
-- ✅ International payment submission via SWIFT
-- ✅ Transaction history and status tracking
-- ✅ Real-time password strength meter
-- ✅ Account lockout after failed login attempts
+- Secure user registration with password strength validation
+- Multi-factor authentication (Username + Account Number)
+- International payment submission via SWIFT
+- Transaction history and status tracking
+- Real-time password strength meter
+- Account lockout after failed login attempts
 
 ### Employee Portal
-- ✅ Staff authentication with IP whitelisting
-- ✅ Transaction verification and approval workflow
-- ✅ Bulk SWIFT submission
-- ✅ Transaction filtering (Pending/Verified/Submitted)
-- ✅ Audit trail for all actions
+- Staff authentication with IP whitelisting
+- Transaction verification and approval workflow
+- Bulk SWIFT submission
+- Transaction filtering (Pending/Verified/Submitted)
+- Audit trail for all actions
 
 ### Security Features
-- 🔒 SSL/TLS encryption (HTTPS)
-- 🔒 bcrypt + pepper password hashing
-- 🔒 JWT token authentication
-- 🔒 Rate limiting (5 login attempts per 15 minutes)
-- 🔒 Account lockout mechanism
-- 🔒 Input validation & sanitization
-- 🔒 SQL/NoSQL injection prevention
-- 🔒 XSS protection
-- 🔒 CORS configuration
-- 🔒 Helmet.js security headers
+- SSL/TLS encryption (HTTPS)
+- bcrypt + pepper password hashing
+- JWT token authentication
+- Rate limiting (5 login attempts per 15 minutes)
+- Account lockout mechanism
+- Input validation & sanitization
+- SQL/NoSQL injection prevention
+- XSS protection
+- CORS configuration
+- Helmet.js security headers
 
 ---
 
@@ -121,11 +125,11 @@ Before you begin, ensure you have the following installed:
   - **Windows**: Included with Git Bash, or download from [slproweb.com](https://slproweb.com/products/Win32OpenSSL.html)
 - **npm** (comes with Node.js)
 
-> ⚠️ **MongoDB Installation NOT Required** - This project uses MongoDB Atlas (cloud database)
+> Note: MongoDB Installation NOT Required - This project uses MongoDB Atlas (cloud database)
 
 ---
 
-## ⚠️ CRITICAL: SSL Certificates
+## CRITICAL: SSL Certificates
 
 **SSL certificates are NOT included in this repository for security reasons.**
 
@@ -133,14 +137,13 @@ Each user **MUST generate their own SSL certificates** on their machine. Without
 
 
 ### What You'll See Without Certificates:
-
 ```
-❌ ERR_EMPTY_RESPONSE
-❌ "This site can't provide a secure connection"
-❌ "localhost didn't send any data"
+ERR_EMPTY_RESPONSE
+"This site can't provide a secure connection"
+"localhost didn't send any data"
 ```
 
-### ✅ Solution:
+### Solution:
 
 Follow Step 4 in the installation guide below to generate certificates. **DO NOT SKIP THIS STEP.**
 
@@ -151,7 +154,6 @@ Follow Step 4 in the installation guide below to generate certificates. **DO NOT
 ### Quick Setup (Recommended)
 
 **For macOS/Linux:**
-
 ```bash
 # 1. Clone the repository
 git clone https://github.com/ST10364151/Part2-payment-portal.git
@@ -166,7 +168,6 @@ npm run dev
 ```
 
 **For Windows:**
-
 ```bash
 # 1. Clone the repository
 git clone https://github.com/ST10364151/Part2-payment-portal.git
@@ -180,17 +181,16 @@ npm run dev
 ```
 
 The setup script will:
-- ✅ Check prerequisites (Node.js, OpenSSL)
-- ✅ Install all dependencies
-- ✅ **Generate SSL certificates for YOUR machine**
-- ✅ Verify installation
+- Check prerequisites (Node.js, OpenSSL)
+- Install all dependencies
+- **Generate SSL certificates for YOUR machine**
+- Verify installation
 
 ---
 
 ### Manual Setup (If Setup Script Fails)
 
 #### Step 1: Clone the Repository
-
 ```bash
 git clone https://github.com/ST10364151/Part2-payment-portal.git
 cd Part2-payment-portal
@@ -263,7 +263,6 @@ cd ..
 **This is the most critical step. The application WILL NOT work without SSL certificates.**
 
 ##### For macOS/Linux:
-
 ```bash
 # Navigate to backend directory
 cd backend
@@ -319,7 +318,6 @@ Email Address: [press Enter to skip]
 ```
 
 ##### Verify SSL Certificates Were Created:
-
 ```bash
 # Check that both files exist
 ls backend/ssl/
@@ -329,12 +327,11 @@ ls backend/ssl/
 # key.pem
 ```
 
-If you see both files, you're ready to proceed! ✅
+If you see both files, you're ready to proceed!
 
 #### Step 5: Verify Complete Setup
 
 Before running the application, verify your setup:
-
 ```bash
 # Check Node.js version
 node --version
@@ -354,7 +351,7 @@ cat backend/.env
 cat frontend/.env
 ```
 
-If all checks pass, you're ready to run the application! ✅
+If all checks pass, you're ready to run the application!
 
 ---
 
@@ -363,14 +360,13 @@ If all checks pass, you're ready to run the application! ✅
 ### Option 1: Run Both Servers Together (Recommended)
 
 From the **root directory**:
-
 ```bash
 npm run dev
 ```
 
 This starts both backend and frontend concurrently:
-- ✅ Backend: `https://localhost:3001` (connects to cloud database)
-- ✅ Frontend: `http://localhost:3000`
+- Backend: `https://localhost:3001` (connects to cloud database)
+- Frontend: `http://localhost:3000`
 
 You should see output like:
 ```
@@ -425,13 +421,13 @@ npm start
    - Click "Advanced"
    - Click "Continue to localhost (unsafe)"
 
-   > 💡 This warning is normal for self-signed certificates in development. In production, you would use certificates from a trusted Certificate Authority (CA).
+   > Note: This warning is normal for self-signed certificates in development. In production, you would use certificates from a trusted Certificate Authority (CA).
 
 3. **Verify Backend is Running**: 
    - Visit `https://localhost:3001/api/health`
    - You should see: `{"status":"healthy","timestamp":"...","ssl":true}`
 
-4. **Start Testing**: Use the credentials in the [Test Credentials](#-test-credentials) section below
+4. **Start Testing**: Use the credentials in the [Test Credentials](#test-credentials) section below
 
 ---
 
@@ -442,22 +438,21 @@ npm start
 This project uses **MongoDB Atlas** - a cloud-hosted MongoDB database.
 
 **Key Benefits:**
-- ✅ No local MongoDB installation required
-- ✅ Pre-populated with test data
-- ✅ Shared database accessible from any machine
-- ✅ Always-on availability
+- No local MongoDB installation required
+- Pre-populated with test data
+- Shared database accessible from any machine
+- Always-on availability
 
 **Connection Details:**
 - Host: `portal.pevzq63.mongodb.net`
 - Database: `payments_portal`
 - Authentication: Included in connection string
 
-> 💡 **How it works**: When you run the backend, it automatically connects to the cloud database. All test accounts and data are already there!
+> Note: When you run the backend, it automatically connects to the cloud database. All test accounts and data are already there!
 
 ---
 
 ## Project Structure
-
 ```
 secure-payments-portal/
 ├── backend/
@@ -520,7 +515,6 @@ secure-payments-portal/
 The cloud database is **pre-populated** with test accounts. Use these credentials to test the application:
 
 ### Customer Account
-
 ```
 Username:        testuser
 Account Number:  1234567890123
@@ -537,7 +531,6 @@ Password:        Test123!
 ### Employee Account
 
 #### Administrator
-
 ```
 Username:  mike.admin
 Password:  Admin@789
@@ -551,13 +544,13 @@ Department: IT Security
 - Submit to SWIFT
 - Full system access
 
-> 💡 **Note**: All test accounts are already created in the cloud database. Just login and start testing!
+> Note: All test accounts are already created in the cloud database. Just login and start testing!
 
 ---
 
 ## Troubleshooting
 
-###  Issue 1: ERR_EMPTY_RESPONSE or "This site can't provide a secure connection"
+### Issue 1: ERR_EMPTY_RESPONSE or "This site can't provide a secure connection"
 
 **Symptoms:**
 - Backend won't start
@@ -568,7 +561,6 @@ Department: IT Security
 **Cause:** SSL certificates are missing or invalid.
 
 **Solution:**
-
 ```bash
 # Navigate to backend/ssl directory
 cd backend/ssl
@@ -632,9 +624,9 @@ This is **normal** for self-signed certificates in development.
 
 1. **Check internet connection** (cloud database requires internet)
 2. **Verify `.env` file** has correct `MONGODB_URI`:
-   ```bash
+```bash
    cat backend/.env | grep MONGODB_URI
-   ```
+```
 3. **Check MongoDB Atlas status**: https://status.mongodb.com/
 4. **Firewall issues**: Ensure MongoDB Atlas IP (port 27017) is not blocked
 
@@ -682,7 +674,6 @@ npm run dev
 - "Module not found" errors
 
 **Solution:**
-
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -744,7 +735,6 @@ sudo yum install openssl
 ```
 
 **Solution:**
-
 ```bash
 # Make script executable
 chmod +x setup.sh
@@ -768,27 +758,27 @@ chmod +x setup.sh
 3. **Accept SSL certificate** (see Issue 2 above)
 4. **Check console for errors**: Press F12 → Console tab
 5. **Verify `.env` file**:
-   ```bash
+```bash
    cat frontend/.env
    # Should show: REACT_APP_API_URL=https://localhost:3001/api
-   ```
+```
 6. **Restart frontend**:
-   ```bash
+```bash
    cd frontend
    npm start
-   ```
+```
 
 ---
 
-## ⚠️ Security Notice
+## Security Notice
 
 **For Educational/Demonstration Purposes Only**
 
 The database credentials and secrets in this submission are for **academic demonstration only**:
 
-- ✅ Used for coursework evaluation
-- ✅ Not suitable for production use
-- ✅ Will be rotated/revoked after grading
+- Used for coursework evaluation
+- Not suitable for production use
+- Will be rotated/revoked after grading
 
 **In Production Environment:**
 - Never commit `.env` files to version control
@@ -802,8 +792,7 @@ The database credentials and secrets in this submission are for **academic demon
 
 ---
 
-## 🚀 Quick Start Commands
-
+## Quick Start Commands
 ```bash
 # Clone repository
 git clone https://github.com/ST10364151/Part2-payment-portal.git
@@ -831,6 +820,49 @@ npm run dev
 
 ---
 
-**Built with ❤️ using React, Node.js, Express, and MongoDB Atlas**
-# DevSecOps CI/CD Pipeline with CircleCI and SonarCloud
+## References
+
+### Video Tutorials and Demonstrations
+
+1. **Setting Up the Project**  
+   [https://youtu.be/VnbEgFjNX70](https://youtu.be/VnbEgFjNX70)  
+   Complete walkthrough of project setup, including SSL certificate generation and dependency installation.
+
+2. **Code Implementation and Demonstration - Part 1**  
+   [https://youtu.be/odEApifJag4](https://youtu.be/odEApifJag4)  
+   Detailed explanation of backend implementation, security features, and authentication mechanisms.
+
+3. **Code Implementation and Demonstration - Part 2**  
+   [https://youtu.be/SAdY_OpfqRs](https://youtu.be/SAdY_OpfqRs)  
+   Frontend implementation, user interface components, and full application demonstration.
+
+4. **DevSecOps CI/CD Pipeline with CircleCI and SonarCloud**  
+   [https://youtu.be/VNd0L2NnGfo?si=qAeSrOaVyvNzB3vq](https://youtu.be/VNd0L2NnGfo?si=qAeSrOaVyvNzB3vq)  
+   Implementation of automated testing, continuous integration, code quality analysis, and deployment pipeline.
+
+### Source Code Repository
+
+- **GitHub Repository**: [https://github.com/ST10364151/Part2-payment-portal.git](https://github.com/ST10364151/Part2-payment-portal.git)
+
+### Technologies and Frameworks
+
+- **React Documentation**: [https://react.dev/](https://react.dev/)
+- **Node.js Documentation**: [https://nodejs.org/docs/](https://nodejs.org/docs/)
+- **Express.js Guide**: [https://expressjs.com/](https://expressjs.com/)
+- **MongoDB Atlas**: [https://www.mongodb.com/atlas](https://www.mongodb.com/atlas)
+- **JWT (JSON Web Tokens)**: [https://jwt.io/](https://jwt.io/)
+- **bcrypt Library**: [https://www.npmjs.com/package/bcrypt](https://www.npmjs.com/package/bcrypt)
+- **Helmet.js Security**: [https://helmetjs.github.io/](https://helmetjs.github.io/)
+
+### Security Best Practices
+
+- **OWASP Top 10**: [https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)
+- **OWASP Authentication Cheat Sheet**: [https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
+- **OWASP Input Validation**: [https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html)
+
+---
+
+**Built with React, Node.js, Express, and MongoDB Atlas**
+
+**License**: Educational/Academic Use Only
 
